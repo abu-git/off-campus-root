@@ -11,7 +11,7 @@ import Filters from '../../components/Filters'
 
 import { getFeaturedProperties, getHomeProperties, searchProperties } from '../../sanity'
 import { router, Redirect } from 'expo-router'
-import { useDebounce } from '../../hooks/useDebounce'
+//import { useDebounce } from '../../hooks/useDebounce'
 
 const Index = () => {
     const { isSignedIn } = useAuth()
