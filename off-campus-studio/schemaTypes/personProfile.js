@@ -13,6 +13,12 @@ export default defineType({
             readOnly: true, // Set from your backend, not manually in the Studio
         }),
         defineField({ name: 'fullName', title: 'Full Name', type: 'string', validation: Rule => Rule.required() }),
+        defineField({
+            name: 'imageUrl',
+            title: 'Image URL',
+            type: 'string',
+            readOnly: true, // This field is set by the app
+        }),
         defineField({ name: 'age', title: 'Age', type: 'number' }),
         defineField({ name: 'occupation', title: 'Occupation', type: 'string', options: { list: ['Student', 'Professional', 'Creative/Freelancer', 'Other'] } }),
         

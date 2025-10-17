@@ -7,5 +7,6 @@ import property from './property'
 import review from './review'
 import listing from './listing'
 import personProfile from './personProfile'
+import application from './application'
 
-export const schemaTypes = [agent, property, review, listing, personProfile]
+export const schemaTypes = [agent, property, review, listing, personProfile, application]

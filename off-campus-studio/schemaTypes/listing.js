@@ -38,6 +38,13 @@ export default defineType({
         defineField({ name: 'description', title: 'Description', type: 'text' }),
         defineField({ name: 'price', title: 'Price (per month)', type: 'number', validation: Rule => Rule.required() }),
         defineField({ name: 'agent', title: 'Listing Agent/Contact', type: 'string' }),
+        defineField({
+            name: 'authorClerkId',
+            title: 'Author Clerk ID',
+            type: 'string',
+            description: "The unique ID of the Clerk user who created this listing.",
+            readOnly: true, // This field should be set by the app, not manually
+        }),
         defineField({ name: 'publishedAt', title: 'Published at', type: 'datetime' }),
         
         // --- Fields that ONLY show up for Roommate Listings ---
