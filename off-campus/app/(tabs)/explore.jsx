@@ -63,7 +63,7 @@ const Explore = () => {
     if (!fontsLoaded) return null;
 
     return (
-        <SafeAreaView className="bg-white h-full">
+        <SafeAreaView className="bg-white flex-1">
             <FlatList
                 // ✅ 5. Data prop updated
                 data={listings}

@@ -1,6 +1,6 @@
 import { useClerk, useUser } from '@clerk/clerk-expo';
 import { useFonts } from "expo-font";
-import { useRouter } from 'expo-router';
+import { useRouter, Redirect } from 'expo-router';
 import React, { useEffect } from 'react';
 import { ActivityIndicator, Alert, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -29,14 +29,9 @@ const Profile = () => {
     });
       
     const router = useRouter();
-    const { user, isSignedIn } = useUser();
+    const { user, isSignedIn, isLoaded } = useUser();
     const { signOut } = useClerk();
 
-    useEffect(() => {
-        if(isSignedIn === false){
-            router.replace('/(auth)/sign-in');
-        }
-    }, [router]);
 
     const onLogout = async () => {
         try {
@@ -55,12 +50,18 @@ const Profile = () => {
         ]);
     };
 
-    if (!fontsLoaded || !isSignedIn) {
+    // Wait for Clerk and fonts to be ready
+    if (!isLoaded || !fontsLoaded) {
         return (
             <SafeAreaView className="bg-white h-full flex justify-center items-center">
                 <ActivityIndicator className="text-primary-300" size="large" />
             </SafeAreaView>
         );
+    }
+
+    // If not signed in, redirect
+    if (!isSignedIn) {
+        return <Redirect href="/(auth)/sign-in" />;
     }
 
     //console.log("My Clerk ID:", user.id)

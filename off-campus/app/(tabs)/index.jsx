@@ -13,7 +13,7 @@ import { router, Redirect } from 'expo-router';
 import { getFeaturedListings, getHomeListings, searchListings } from '../../sanity';
 
 const Index = () => {
-    const { isSignedIn } = useAuth();
+    const { isSignedIn, isLoaded } = useAuth();
     const { user } = useUser();
 
     // Font loading...
@@ -84,13 +84,23 @@ const Index = () => {
         loadInitial();
     }, []);
 
-    // ... Auth, font, and loading checks ...
-    if (!fontsLoaded || loading) {
+    // First, wait for Clerk to load the authentication state
+    if (!isLoaded || !fontsLoaded) {
+        return <View className='flex-1 justify-center items-center bg-white'><ActivityIndicator size="large" className="text-primary-300" /></View>;
+    }
+
+    // If Clerk is loaded and the user is not signed in, redirect them
+    if (!isSignedIn) {
+        return <Redirect href="/(auth)/sign-in" />;
+    }
+
+    // If we are still loading data after being signed in
+    if (loading) {
         return <View className='flex-1 justify-center items-center bg-white'><ActivityIndicator size="large" className="text-primary-300" /></View>;
     }
 
     return (
-        <SafeAreaView className="bg-white h-full">
+        <SafeAreaView className="bg-white flex-1">
             <FlatList
                 // ✅ 5. Data prop updated for the main list
                 data={homeListings}
@@ -140,7 +150,17 @@ const Index = () => {
                         {/* Recommendations Section */}
                         <View className="flex flex-row items-center justify-between pb-3">
                             <Text style={{ fontFamily: 'Rubik-Bold' }} className="text-xl text-black-300">{searchQuery ? 'Search Results' : 'Our Recommendations'}</Text>
-                            {/* ... */}
+                            
+                            {/* Conditionally show spinner or 'See all' button */}
+                            {isSearching ? (
+                                <ActivityIndicator size="small" className="text-primary-300" />
+                            ) : (
+                                <TouchableOpacity onPress={() => router.push('/explore')}>
+                                    <Text style={{ fontFamily: 'Rubik-Bold' }} className="text-base text-primary-300">
+                                        See all
+                                    </Text>
+                                </TouchableOpacity>
+                            )}
                         </View>
                         <Filters />
                     </View>
