@@ -36,7 +36,7 @@ const SignIn = () => {
 
     const onPress = useCallback(async () => {
         try {
-            //console.log('sign in btn press')
+            console.log('sign in btn press')
             // Start the authentication process by calling `startSSOFlow()`
             const { createdSessionId, setActive, signIn, signUp } = await startSSOFlow({
                 strategy: 'oauth_google',

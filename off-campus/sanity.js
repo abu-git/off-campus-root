@@ -203,6 +203,16 @@ export async function createOrUpdatePersonProfile(profileData) {
     }
 }
 
+// Get a person's profile using their document ID
+export async function getPersonProfileById(profileId) {
+    try {
+        const data = await sanityClient.fetch(`*[_type == "personProfile" && _id == $profileId][0]`, { profileId });
+        return data;
+    } catch (error) {
+        console.log("Error fetching person profile by ID:", error);
+    }
+}
+
 // =================================================================
 // NEW APPLICATION FUNCTIONS 🤝
 // =================================================================

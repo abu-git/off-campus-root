@@ -1,11 +1,14 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
 
 export const RoommateCard = ({ profile, onPress }) => {
+    const router = useRouter();
+
     //console.log(profile)
     return (
         <TouchableOpacity 
-            onPress={onPress} 
+            onPress={() => router.push(`/profile/${profile._id}`)}
             className="mt-4 p-4 rounded-lg bg-white shadow-lg shadow-black-100/70"
         >
             <View className="flex-row items-center">
