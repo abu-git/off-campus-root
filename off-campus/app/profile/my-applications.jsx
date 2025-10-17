@@ -1,6 +1,7 @@
 // app/profile/my-applications.jsx (New File)
 
 import React, { useEffect, useState, useCallback } from 'react';
+import { useFonts } from "expo-font";
 import { ActivityIndicator, FlatList, Text, View, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -13,6 +14,12 @@ const MyApplicationsScreen = () => {
     const router = useRouter();
     const [applications, setApplications] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    const [fontsLoaded] = useFonts({
+        "Rubik-Bold": require("../../assets/fonts/Rubik-Bold.ttf"),
+        "Rubik-Medium": require("../../assets/fonts/Rubik-Medium.ttf"),
+        "Rubik-Regular": require("../../assets/fonts/Rubik-Regular.ttf"),
+    });
 
     const fetchMyApplications = useCallback(async () => {
         if (!user) return;
@@ -37,7 +44,7 @@ const MyApplicationsScreen = () => {
         fetchMyApplications();
     }, [fetchMyApplications]);
 
-    if (loading) {
+    if (!fontsLoaded || loading) {
         return <View className='flex-1 justify-center items-center bg-white'><ActivityIndicator size="large" className="text-primary-300" /></View>;
     }
 

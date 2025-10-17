@@ -41,7 +41,7 @@ export const FeaturedCard = ({ item, onPress }) => { // 1. Changed prop destruct
 
                 <View className="flex flex-row items-center justify-between w-full">
                     {/* 6. 'price' is still top-level */}
-                    <Text style={{ fontFamily: 'Rubik-ExtraBold', fontSize: 21 }} className="text-xl text-white">&#8358;{item.price}</Text>
+                    <Text style={{ fontFamily: 'Rubik-ExtraBold', fontSize: 21 }} className="text-xl text-white">&#8358;{item.price.toLocaleString()}</Text>
                     <Image source={icons.heart} className="size-5" />
                 </View>
             </View>
@@ -73,7 +73,7 @@ export const Card = ({ item, onPress }) => { // 1. Changed prop destructuring
 
                 <View className="flex flex-row items-center justify-between mt-2">
                     {/* 6. 'price' is still top-level */}
-                    <Text style={{ fontFamily: 'Rubik-Bold', fontSize: 15 }} className="text-base text-primary-300">&#8358;{item.price}</Text>
+                    <Text style={{ fontFamily: 'Rubik-Bold', fontSize: 15 }} className="text-base text-primary-300">&#8358;{item.price.toLocaleString()}</Text>
                     <Image source={icons.heart} className="w-5 h-5 mr-2" tintColor='#191d31' />
                 </View>
             </View>

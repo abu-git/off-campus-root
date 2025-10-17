@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { useFonts } from "expo-font";
 import { ActivityIndicator, FlatList, Text, View, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -11,6 +12,12 @@ const MyListingsScreen = () => {
     const router = useRouter();
     const [myListings, setMyListings] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    const [fontsLoaded] = useFonts({
+        "Rubik-Bold": require("../../assets/fonts/Rubik-Bold.ttf"),
+        "Rubik-Medium": require("../../assets/fonts/Rubik-Medium.ttf"),
+        "Rubik-Regular": require("../../assets/fonts/Rubik-Regular.ttf"),
+    });
 
     const fetchMyListings = useCallback(async () => {
         if (!user) return;
@@ -33,7 +40,7 @@ const MyListingsScreen = () => {
         fetchMyListings();
     }, [fetchMyListings]);
 
-    if (loading) {
+    if (!fontsLoaded || loading) {
         return <View className='flex-1 justify-center items-center bg-white'><ActivityIndicator size="large" className="text-primary-300" /></View>;
     }
 
@@ -60,7 +67,7 @@ const MyListingsScreen = () => {
                                 onPress={() => router.push(`/listings/${item._id}/applicants`)}
                                 className="bg-primary-300 py-3 rounded-lg mt-2"
                              >
-                                <Text className="text-white text-center font-bold">View Applicants</Text>
+                                <Text style={{ fontFamily: 'Rubik-Bold' }} className="text-white text-center">View Applicants</Text>
                             </TouchableOpacity>
                         )}
                     </View>
