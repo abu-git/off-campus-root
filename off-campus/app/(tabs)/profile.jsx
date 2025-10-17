@@ -1,12 +1,11 @@
-import { useClerk, useUser } from '@clerk/clerk-expo'
-import { useFonts } from "expo-font"
-import { useRouter } from 'expo-router'
-import React, { useEffect } from 'react'
-import { ActivityIndicator, Alert, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
-import { SafeAreaView } from "react-native-safe-area-context"
-import { settings } from '../../constants/data'
-import icons from "../../constants/icons"
-
+import { useClerk, useUser } from '@clerk/clerk-expo';
+import { useFonts } from "expo-font";
+import { useRouter } from 'expo-router';
+import React, { useEffect } from 'react';
+import { ActivityIndicator, Alert, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from "react-native-safe-area-context";
+import { settings } from '../../constants/data';
+import icons from "../../constants/icons";
 
 const SettingsItem = ({ icon, title, onPress, textStyle, showArrow = true }) => (
     <TouchableOpacity onPress={onPress} className="flex flex-row items-center justify-between py-3">
@@ -17,11 +16,9 @@ const SettingsItem = ({ icon, title, onPress, textStyle, showArrow = true }) => 
 
         {showArrow && <Image source={icons.rightArrow} className="size-5" />}
     </TouchableOpacity>
-)
-
+);
 
 const Profile = () => {
-
     const [fontsLoaded] = useFonts({
         "Rubik-Bold": require("../../assets/fonts/Rubik-Bold.ttf"),
         "Rubik-ExtraBold": require("../../assets/fonts/Rubik-ExtraBold.ttf"),
@@ -29,63 +26,41 @@ const Profile = () => {
         "Rubik-Medium": require("../../assets/fonts/Rubik-Medium.ttf"),
         "Rubik-Regular": require("../../assets/fonts/Rubik-Regular.ttf"),
         "Rubik-SemiBold": require("../../assets/fonts/Rubik-SemiBold.ttf"),
-    })
+    });
       
-    
-
-    const router = useRouter()
-    const { user, isSignedIn } = useUser()
-    const { signOut } = useClerk()
-
-    
+    const router = useRouter();
+    const { user, isSignedIn } = useUser();
+    const { signOut } = useClerk();
 
     useEffect(() => {
         if(isSignedIn === false){
-            router.replace('/(auth)/sign-in')
+            router.replace('/(auth)/sign-in');
         }
-    }, [router])
+    }, [router]);
 
     const onLogout = async () => {
-        try{
-            await signOut()
-            // Redirect to your desired page
-            router.replace('/(auth)/sign-in') // expo router is used instead of Linking below
-            //Linking.openURL(Linking.createURL('/(auth)/sign-in'))
-            
-        }catch (err) {
-            // See https://clerk.com/docs/custom-flows/error-handling
-            // for more info on error handling
-            console.error(JSON.stringify(err, null, 2))
-            Alert.alert('Logout', JSON.stringify(err, null, 2))
+        try {
+            await signOut();
+            router.replace('/(auth)/sign-in');
+        } catch (err) {
+            console.error(JSON.stringify(err, null, 2));
+            Alert.alert('Logout', JSON.stringify(err, null, 2));
         }
-    }
+    };
 
     const handleLogout = async () => {
-        // show confirm modal
         Alert.alert('Confirm', 'Are you sure you want to logout?', [
-            {
-                text: 'Cancel',
-                onPress: () => console.log('signout modal cancel'),
-                style: 'cancel'
-            },
-            {
-                text: 'Logout',
-                onPress: () => {onLogout()},
-                style: 'destructive'
-            }
-        ])
-    }
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Logout', onPress: onLogout, style: 'destructive' }
+        ]);
+    };
 
-    if (!fontsLoaded) {
-        return null;
-    }
-
-    if(!isSignedIn){
-        return(
+    if (!fontsLoaded || !isSignedIn) {
+        return (
             <SafeAreaView className="bg-white h-full flex justify-center items-center">
                 <ActivityIndicator className="text-primary-300" size="large" />
             </SafeAreaView>
-        )
+        );
     }
 
     return (
@@ -102,21 +77,29 @@ const Profile = () => {
                             source={{ uri: user?.imageUrl }}
                             className="size-44 relative rounded-full"
                         />
-
                         <Text style={{ fontFamily: 'Rubik-Bold' }} className="text-2xl font-rubik-bold mt-2">{user?.fullName}</Text>
                     </View>
                 </View>
 
+                {/* --- THIS IS THE SECTION TO UPDATE --- */}
                 <View className="flex flex-col mt-10">
+                    {/* ✅ ADD THIS NEW ITEM to navigate to the roommate profile editor */}
+                    <SettingsItem 
+                        icon={icons.user} 
+                        title="My Roommate Profile" 
+                        onPress={() => router.push('/profile/edit')} 
+                    />
+
+                    {/* Your existing items */}
                     <SettingsItem icon={icons.calendar} title="My Bookings" />
                     <SettingsItem icon={icons.wallet} title="Payments" />
                 </View>
 
-                <View className="flex flex-col mt-5 border-t pt-5 border-primary-200">
+                {/*<View className="flex flex-col mt-5 border-t pt-5 border-primary-200">
                     {settings.slice(2).map((item, index) => (
                         <SettingsItem key={index} {...item} />
                     ))}
-                </View>
+                </View>*/}
 
                 <View className="flex flex-col border-t mt-5 pt-5 border-primary-200">
                     <SettingsItem
@@ -129,7 +112,7 @@ const Profile = () => {
                 </View>
             </ScrollView>
         </SafeAreaView>
-    )
-}
+    );
+};
 
-export default Profile
+export default Profile;
