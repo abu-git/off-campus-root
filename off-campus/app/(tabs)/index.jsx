@@ -105,6 +105,14 @@ const Index = () => {
                         {/* Header with user info */}
                         <View className="flex flex-row items-center justify-between mt-5">
                             {/* ... user avatar and name ... */}
+                            <View className="flex flex-row">
+                                <Image source={{ uri: user?.imageUrl }} className="size-12 rounded-full" />
+                                <View className="flex flex-col items-start ml-2 justify-center">
+                                    <Text style={{ fontFamily: 'Rubik-Regular', fontSize: 11 }} className="text-xs text-black-100">Hello</Text>
+                                    <Text style={{ fontFamily: 'Rubik-Medium', fontSize: 15 }} className="text-base font-rubik-medium text-black-300">{user?.fullName}</Text>
+                                </View>
+                            </View>
+                            <Image source={icons.bell} className="size-6" />
                         </View>
 
                         <Search onSearch={handleSearch} />

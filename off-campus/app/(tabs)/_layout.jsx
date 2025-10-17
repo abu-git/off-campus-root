@@ -33,10 +33,9 @@ const TabsLayout = () => {
             tabBarShowLabel: false,
             tabBarStyle: {
                 backgroundColor: "white",
-                position: "absolute",
                 borderTopColor: "#0061FF1A",
                 borderTopWidth: 1,
-                minHeight: 90,
+                minHeight: 70,
             },
         }}
     >
@@ -58,6 +57,22 @@ const TabsLayout = () => {
                 tabBarIcon: ({ focused }) => (
                     <TabIcon focused={focused} icon={icons.search} title="Explore" />
                 ),
+            }}
+        />
+
+        <Tabs.Screen
+            name="roommates"
+            options={{
+                title: 'Roommates',
+                headerShown: false,
+                tabBarIcon: ({ color, focused }) => (
+                    <TabIcon
+                        icon={icons.users} // Use an icon for 'users' or 'group'
+                        color={color}
+                        title="Roommates"
+                        focused={focused}
+                    />
+                )
             }}
         />
         <Tabs.Screen

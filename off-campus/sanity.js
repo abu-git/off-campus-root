@@ -203,6 +203,113 @@ export async function createOrUpdatePersonProfile(profileData) {
     }
 }
 
+// =================================================================
+// NEW APPLICATION FUNCTIONS 🤝
+// =================================================================
+
+// Submit a new application for a listing
+export async function submitApplication(listingId, seekerProfileId, message = '') {
+    try {
+        const result = await sanityClient.create({
+            _type: 'application',
+            listing: {
+                _type: 'reference',
+                _ref: listingId,
+            },
+            seeker: {
+                _type: 'reference',
+                _ref: seekerProfileId,
+            },
+            status: 'pending', // Applications always start as pending
+            message: message,
+        });
+        console.log('Application submitted:', result._id);
+        return result;
+    } catch (error) {
+        console.error("Error submitting application:", error);
+        // It's good practice to re-throw the error so the UI can handle it
+        throw new Error('Failed to submit application.');
+    }
+}
+
+// Get all applications for a specific listing
+export async function getApplicationsForListing(listingId) {
+    try {
+        const data = await sanityClient.fetch(`
+            *[_type == "application" && listing._ref == $listingId]{
+                ...,
+                // Expand the seeker reference to get their full profile details
+                seeker->
+            } | order(_createdAt desc)
+        `, { listingId });
+        return data;
+    } catch (error) {
+        console.error("Error fetching applications:", error);
+        return [];
+    }
+}
+
+// Update the status of an application (e.g., to 'viewed', 'accepted', etc.)
+export async function updateApplicationStatus(applicationId, newStatus) {
+    try {
+        const result = await sanityClient
+            .patch(applicationId) // Use the document ID to patch
+            .set({ status: newStatus }) // Set the new status
+            .commit(); // Commit the change
+        return result;
+    } catch (error) {
+        console.error("Error updating application status:", error);
+        throw new Error('Failed to update status.');
+    }
+}
+
+// Get all applications submitted by a specific seeker
+export async function getApplicationsForSeeker(seekerProfileId) {
+    try {
+        const data = await sanityClient.fetch(`
+            *[_type == "application" && seeker._ref == $seekerProfileId]{
+                ...,
+                // We need to see the listing details for each application
+                listing->{
+                    ...,
+                    "imageUrl": property->gallery[0].asset->url,
+                    property->
+                }
+            } | order(_createdAt desc)
+        `, { seekerProfileId });
+        return data;
+    } catch (error) {
+        console.error("Error fetching seeker's applications:", error);
+        return [];
+    }
+}
+
+// Check if an application already exists for a specific seeker and listing
+export async function checkIfApplicationExists(listingId, seekerProfileId) {
+    try {
+        // This query counts the number of matching documents. It's faster than fetching the whole document.
+        const query = `count(*[_type == "application" && listing._ref == $listingId && seeker._ref == $seekerProfileId])`;
+        const params = { listingId, seekerProfileId };
+        
+        const count = await sanityClient.fetch(query, params);
+        
+        // If the count is greater than 0, an application exists.
+        return count > 0;
+    } catch (error) {
+        console.error("Error checking for application:", error);
+        return false; // Default to false on error
+    }
+}
+
+export async function getAllSeekerProfiles() {
+    try {
+        const data = await sanityClient.fetch(`*[_type == "personProfile"] | order(_createdAt desc)`);
+        return data;
+    } catch (error) {
+        console.log("Error fetching all seeker profiles:", error);
+        return [];
+    }
+}
 
 // =================================================================
 // OLD PROPERTY FUNCTIONS (for reference, will be removed later)

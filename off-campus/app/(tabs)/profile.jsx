@@ -63,6 +63,8 @@ const Profile = () => {
         );
     }
 
+    //console.log("My Clerk ID:", user.id)
+
     return (
         <SafeAreaView className='h-full bg-white'>
             <ScrollView showsVerticalScrollIndicator={true} contentContainerClassName="pb-32 px-7">
@@ -83,7 +85,16 @@ const Profile = () => {
 
                 {/* --- THIS IS THE SECTION TO UPDATE --- */}
                 <View className="flex flex-col mt-10">
-                    {/* ✅ ADD THIS NEW ITEM to navigate to the roommate profile editor */}
+                <SettingsItem 
+                    icon={icons.send} // You'll need an 'outbox' or 'document' icon
+                    title="My Applications" 
+                    onPress={() => router.push('/profile/my-applications')} 
+                />
+                    <SettingsItem 
+                        icon={icons.wallet} // You'll need a 'list' or 'home' icon
+                        title="My Listings" 
+                        onPress={() => router.push('/profile/my-listings')} 
+                    />
                     <SettingsItem 
                         icon={icons.user} 
                         title="My Roommate Profile" 
@@ -91,8 +102,8 @@ const Profile = () => {
                     />
 
                     {/* Your existing items */}
-                    <SettingsItem icon={icons.calendar} title="My Bookings" />
-                    <SettingsItem icon={icons.wallet} title="Payments" />
+                    {/*<SettingsItem icon={icons.calendar} title="My Bookings" />
+                    <SettingsItem icon={icons.wallet} title="Payments" />*/}
                 </View>
 
                 {/*<View className="flex flex-col mt-5 border-t pt-5 border-primary-200">

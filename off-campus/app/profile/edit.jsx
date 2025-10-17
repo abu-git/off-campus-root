@@ -64,6 +64,7 @@ const EditProfile = () => {
             const profileData = {
                 clerkId: user.id,
                 fullName: user.fullName,
+                imageUrl: user.imageUrl,
                 bio,
                 occupation,
                 cleanliness,
