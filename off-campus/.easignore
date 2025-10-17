@@ -10,7 +10,7 @@ web-build/
 expo-env.d.ts
 
 # Big Image Files
-assets/images/gallery
+assets/images/gallery/
 
 # Native
 .kotlin/
