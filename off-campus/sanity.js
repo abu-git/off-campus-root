@@ -135,12 +135,13 @@ export async function getExploreListings() {
 // Get a Single Listing's Details (for the [id].jsx screen)
 export async function getListingDetails(id) {
     try {
-        // Fetch the specific listing by its ID, and also expand its property reference
         const data = await sanityClient.fetch(`*[_type == "listing" && _id == $id]{
             ...,
+            "galleryUrls": property->gallery[].asset->url, 
             property->
         }`, { id })
-        return data
+        // Return the first (and only) result
+        return data?.[0]; 
     } catch (err) {
         console.log("Error fetching listing details:", err)
     }

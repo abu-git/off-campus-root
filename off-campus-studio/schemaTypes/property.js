@@ -1,88 +1,53 @@
+// File: sanity/schemas/property.js
 import {defineField, defineType} from 'sanity'
 
 export default defineType({
     name: 'property',
-    title: 'Property',
+    title: 'Property (Physical Building)',
     type: 'document',
     fields: [
         defineField({
             name: 'name',
-            title: 'Name',
+            title: 'Property Name/Address',
             type: 'string',
-        }),
-        defineField({
-            name: 'description',
-            title: 'Short Description',
-            type: 'string',
-        }),
-        defineField({
-            name: 'address',
-            title: 'Address',
-            type: 'string',
-        }),
-        defineField({
-            name: 'price',
-            title: 'Price',
-            type: 'string',
+            description: 'E.g., "The Orangerie, Vredehoek" or "15 Main Road, Green Point"',
+            validation: Rule => Rule.required(),
         }),
         defineField({
             name: 'area',
-            title: 'Area',
+            title: 'Area/Suburb',
             type: 'string',
-        }),
-        defineField({
-            name: 'bedroom',
-            title: 'Bedroom(s)',
-            type: 'number',
-        }),
-        defineField({
-            name: 'bathroom',
-            title: 'Bathroom(s)',
-            type: 'number',
-        }),
-        defineField({
-            name: 'rating',
-            title: 'Rating',
-            type: 'number',
-        }),
-        defineField({
-            name: 'isOwner',
-            title: 'Is Agent the Owner',
-            type: 'boolean',
-        }),
-        defineField({
-            name: 'image',
-            title: 'Image URL',
-            type: 'string',
-        }),
-        defineField({
-            name: 'agent',
-            title: 'Agent Name',
-            type: 'string'
+            validation: Rule => Rule.required(),
         }),
         defineField({
             name: 'type',
-            title: 'Type',
+            title: 'Property Type',
             type: 'string',
             options: {
                 list: [
-                    { title: 'All', value: 'all' },
-                    { title: 'House', value: 'house' },
-                    { title: 'Condo', value: 'condo' },
-                    { title: 'Duplex', value: 'duplex' },
-                    { title: 'Studio', value: 'studio' },
-                    { title: 'Villa', value: 'villa' },
-                    { title: 'Apartment', value: 'apartment' },
-                    { title: 'Townhouse', value: 'townhouse' },
-                    { title: 'Others', value: 'others' },
+                { title: 'House', value: 'house' },
+                { title: 'Apartment Block', value: 'apartment' },
+                { title: 'Townhouse Complex', value: 'townhouse' },
+                { title: 'Other', value: 'other' },
                 ],
                 layout: 'dropdown'
             },
-            initialValue: 'all'
         }),
         defineField({
+            name: 'totalBedrooms',
+            title: 'Total Bedroom(s) in Property',
+            type: 'number',
+        }),
+        defineField({
+            name: 'totalBathrooms',
+            title: 'Total Bathroom(s) in Property',
+            type: 'number',
+        }),
+        
+        // --- THIS IS THE UPDATED FACILITIES FIELD ---
+        defineField({
             name: 'facilities',
-            title: 'Facilities',
+            title: 'Building/Property Facilities',
             type: 'array',
             of: [
                 {
@@ -104,43 +69,18 @@ export default defineType({
                 layout: 'tags'
             }
         }),
+
         defineField({
             name: 'gallery',
-            title: 'Gallery',
+            title: 'Photo Gallery',
             type: 'array',
-            of: [
-                {
-                    type: 'image',
-                    options: {
-                        hotspot: true
-                    },
-                    fields: [
-                        {
-                            name: 'alt',
-                            title: 'Alternative Text',
-                            type: 'string',
-                            description: 'Important for SEO and accessibility.',
-                            validation: Rule => Rule.required(),
-                        },
-                        {
-                            name: 'caption',
-                            title: 'Caption',
-                            type: 'string',
-                        }
-                    ]
-                }
-            ] 
+            of: [{ type: 'image', /* ... your gallery image fields ... */ }] 
         }),
-        defineField({
-            name: 'publishedAt',
-            title: 'Published at',
-            type: 'datetime',
-        })
     ],
-
     preview: {
         select: {
             title: 'name',
+            subtitle: 'area'
         }
     },
 })
