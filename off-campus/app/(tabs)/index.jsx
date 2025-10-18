@@ -107,9 +107,10 @@ const Index = () => {
                 renderItem={({item}) => <Card item={item} onPress={() => handleCardPress(item._id)} />}
                 keyExtractor={(item) => item._id}
                 numColumns={2}
-                contentContainerClassName="pb-32"
+                contentContainerClassName="pb-5"
                 columnWrapperClassName="flex gap-5 px-5"
                 showsVerticalScrollIndicator={false}
+                ListFooterComponent={<View className="h-20" />}
                 ListHeaderComponent={() => (
                     <View className="px-5">
                         {/* Header with user info */}

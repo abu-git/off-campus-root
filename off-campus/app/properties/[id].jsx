@@ -251,7 +251,7 @@ const PropertyDetail = () => {
                         disabled={buttonDisabled}
                         className={`flex-1 flex-row items-center justify-center py-3 rounded-full shadow-md shadow-zinc-400 ${buttonDisabled ? 'bg-gray-400' : 'bg-primary-300'}`}
                     >
-                        <Text style={{ fontFamily: 'Rubik-Bold' }} className="text-white text-lg text-center">
+                        <Text style={{ fontFamily: 'Rubik-Bold' }} className="text-white text-md text-center">
                             {isApplying ? "Applying..." : buttonText}
                         </Text>
                     </TouchableOpacity>

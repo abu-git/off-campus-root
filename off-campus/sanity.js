@@ -85,6 +85,20 @@ export async function searchProperties(query) {
 }
 
 
+// Get Properties for user
+export async function getPropertiesForUser(clerkId) {
+    try {
+        const query = `*[_type == "property" && authorClerkId == $clerkId] | order(_createdAt desc)`;
+        const params = { clerkId };
+        const data = await sanityClient.fetch(query, params);
+        return data;
+    } catch (error) {
+        console.error("Error fetching user's properties:", error);
+        return [];
+    }
+}
+
+
 // =================================================================
 // NEW LISTING FUNCTIONS 🏡
 // =================================================================
@@ -168,6 +182,26 @@ export async function searchListings(query) {
     } catch (error) {
         console.log("Error searching listings:", error);
         return [];
+    }
+}
+
+export async function createListing(listingData) {
+    try {
+        const { propertyId, ...restOfData } = listingData;
+        const result = await sanityClient.create({
+            _type: 'listing',
+            ...restOfData,
+            // Link to the property document
+            property: {
+                _type: 'reference',
+                _ref: propertyId,
+            },
+            publishedAt: new Date().toISOString(),
+        });
+        return result;
+    } catch (error) {
+        console.error("Error creating listing:", error);
+        throw new Error('Failed to create listing.');
     }
 }
 

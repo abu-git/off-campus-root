@@ -19,7 +19,7 @@ export const ApplicationCard = ({ application }) => {
     return (
         <TouchableOpacity 
             onPress={() => router.push(`/properties/${listing._id}`)}
-            className="w-full flex-row items-center mt-4 p-3 rounded-lg bg-white shadow-md shadow-black-100/70"
+            className="w-full flex-row items-center mt-4 p-3 rounded-lg bg-[#fcfeff] shadow-md shadow-black-100/70"
         >
             <Image 
                 source={{ uri: listing?.imageUrl }} 

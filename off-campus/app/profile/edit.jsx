@@ -3,10 +3,9 @@ import { useFonts } from "expo-font";
 import { useUser } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+// ✅ 1. Import Switch
+import { ActivityIndicator, Alert, ScrollView, Text, TextInput, TouchableOpacity, View, Switch } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-// ✅ 1. Import our new Sanity functions for profiles
 import { getPersonProfile, createOrUpdatePersonProfile } from '../../sanity';
 
 const EditProfile = () => {
@@ -19,48 +18,55 @@ const EditProfile = () => {
         "Rubik-Regular": require("../../assets/fonts/Rubik-Regular.ttf"),
     });
 
-    // ✅ 2. Create state for each form field
+    // ✅ 2. State for all form fields
     const [bio, setBio] = useState('');
     const [occupation, setOccupation] = useState('');
     const [cleanliness, setCleanliness] = useState('');
     const [maxBudget, setMaxBudget] = useState('');
+    const [age, setAge] = useState('');
+    const [socialHabits, setSocialHabits] = useState(''); // Handled as comma-separated string
+    const [smoker, setSmoker] = useState(false);
+    const [hasPets, setHasPets] = useState(false);
+    const [moveInDate, setMoveInDate] = useState('');
     
     const [loading, setLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
 
-    // ✅ 3. Function to load existing profile data when the screen opens
+    // ✅ 3. Updated load function
     useEffect(() => {
         const loadProfile = async () => {
             if (!user) return;
             try {
                 const profile = await getPersonProfile(user.id);
                 if (profile) {
-                    // If a profile exists, populate the form fields
                     setBio(profile.bio || '');
                     setOccupation(profile.occupation || '');
                     setCleanliness(profile.cleanliness || '');
                     setMaxBudget(profile.maxBudget?.toString() || '');
+                    // Load new fields
+                    setAge(profile.age?.toString() || '');
+                    setSocialHabits(profile.socialHabits?.join(', ') || ''); // Convert array to string
+                    setSmoker(profile.smoker || false);
+                    setHasPets(profile.hasPets || false);
+                    setMoveInDate(profile.moveInDate || '');
                 }
             } catch (error) {
                 console.log("Failed to load profile:", error);
-                Alert.alert("Error", "Could not load your profile data.");
             } finally {
                 setLoading(false);
             }
         };
-
         loadProfile();
-    }, [user]); // Re-run if the user object changes
+    }, [user]);
 
-    // ✅ 4. Function to handle saving the data to Sanity
+    // ✅ 4. Updated save function
     const handleSave = async () => {
-        if (!user) {
-            Alert.alert("Error", "You must be signed in to save a profile.");
-            return;
-        }
-
+        if (!user) return;
         setIsSaving(true);
         try {
+            // Convert comma-separated string to an array
+            const socialHabitsArray = socialHabits.split(',').map(s => s.trim()).filter(s => s);
+
             const profileData = {
                 clerkId: user.id,
                 fullName: user.fullName,
@@ -68,15 +74,20 @@ const EditProfile = () => {
                 bio,
                 occupation,
                 cleanliness,
-                maxBudget: Number(maxBudget) || 0, // Convert budget to a number
+                maxBudget: Number(maxBudget) || 0,
+                // Add new fields
+                age: Number(age) || null,
+                socialHabits: socialHabitsArray,
+                smoker,
+                hasPets,
+                moveInDate: moveInDate || null, // Send YYYY-MM-DD string or null
             };
 
             await createOrUpdatePersonProfile(profileData);
             Alert.alert("Success!", "Your roommate profile has been saved.");
-            router.back(); // Go back to the main profile screen
+            router.back();
         } catch (error) {
             console.log("Failed to save profile:", error);
-            Alert.alert("Error", "Something went wrong while saving.");
         } finally {
             setIsSaving(false);
         }
@@ -89,7 +100,7 @@ const EditProfile = () => {
     // --- JSX Form ---
     return (
         <SafeAreaView className="bg-white h-full">
-            <ScrollView contentContainerClassName="p-5">
+            <ScrollView contentContainerClassName="p-5" keyboardShouldPersistTaps="handled">
                 <Text style={{ fontFamily: 'Rubik-Bold' }} className="text-2xl text-black-300 mb-5">
                     Edit Your Roommate Profile
                 </Text>
@@ -103,6 +114,16 @@ const EditProfile = () => {
                     className="bg-gray-100 p-3 rounded-lg h-32"
                     style={{ fontFamily: 'Rubik-Regular' }}
                     textAlignVertical="top"
+                />
+
+                <Text style={{ fontFamily: 'Rubik-Medium' }} className="text-base text-black-200 mt-4 mb-2">Age</Text>
+                <TextInput
+                    value={age}
+                    onChangeText={setAge}
+                    placeholder="e.g., 24"
+                    keyboardType="numeric"
+                    className="bg-gray-100 p-3 rounded-lg"
+                    style={{ fontFamily: 'Rubik-Regular' }}
                 />
 
                 <Text style={{ fontFamily: 'Rubik-Medium' }} className="text-base text-black-200 mt-4 mb-2">Occupation</Text>
@@ -123,6 +144,24 @@ const EditProfile = () => {
                     style={{ fontFamily: 'Rubik-Regular' }}
                 />
 
+                <Text style={{ fontFamily: 'Rubik-Medium' }} className="text-base text-black-200 mt-4 mb-2">Social Habits</Text>
+                <TextInput
+                    value={socialHabits}
+                    onChangeText={setSocialHabits}
+                    placeholder="e.g., Often have friends over, Mostly keep to myself"
+                    className="bg-gray-100 p-3 rounded-lg"
+                    style={{ fontFamily: 'Rubik-Regular' }}
+                />
+
+                <Text style={{ fontFamily: 'Rubik-Medium' }} className="text-base text-black-200 mt-4 mb-2">Ideal Move-in Date</Text>
+                <TextInput
+                    value={moveInDate}
+                    onChangeText={setMoveInDate}
+                    placeholder="YYYY-MM-DD"
+                    className="bg-gray-100 p-3 rounded-lg"
+                    style={{ fontFamily: 'Rubik-Regular' }}
+                />
+
                 <Text style={{ fontFamily: 'Rubik-Medium' }} className="text-base text-black-200 mt-4 mb-2">Maximum Budget (₦)</Text>
                 <TextInput
                     value={maxBudget}
@@ -132,6 +171,16 @@ const EditProfile = () => {
                     className="bg-gray-100 p-3 rounded-lg"
                     style={{ fontFamily: 'Rubik-Regular' }}
                 />
+
+                {/* --- Boolean Switches --- */}
+                <View className="flex-row items-center justify-between mt-6">
+                    <Text style={{ fontFamily: 'Rubik-Medium' }} className="text-lg">Are you a smoker?</Text>
+                    <Switch value={smoker} onValueChange={setSmoker} />
+                </View>
+                <View className="flex-row items-center justify-between mt-4">
+                    <Text style={{ fontFamily: 'Rubik-Medium' }} className="text-lg">Do you have pets?</Text>
+                    <Switch value={hasPets} onValueChange={setHasPets} />
+                </View>
 
                 <TouchableOpacity 
                     onPress={handleSave} 

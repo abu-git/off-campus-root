@@ -14,6 +14,12 @@ export default defineType({
             validation: Rule => Rule.required(),
         }),
         defineField({
+            name: 'authorClerkId',
+            title: 'Author Clerk ID',
+            type: 'string',
+            //readOnly: true,
+        }),
+        defineField({
             name: 'area',
             title: 'Area/Suburb',
             type: 'string',

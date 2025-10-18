@@ -12,9 +12,9 @@ const ApplicantCard = ({ application, onStatusChange }) => {
     return (
         <TouchableOpacity
             onPress={() => router.push(`/profile/${seeker._id}`)}
-            className="w-full mt-4 p-4 rounded-lg bg-white shadow-lg shadow-black-100/70"
+            className="w-full mt-4 p-4 rounded-lg bg-[#fcfeff] shadow-lg shadow-black-100/70"
         >
-            <View className="w-full mt-4 p-4 rounded-lg bg-white shadow-lg shadow-black-100/70">
+            <View className="w-full mt-4 p-4 rounded-lg bg-[#fcfeff] shadow-black-100/70">
                 <View className="flex-row items-center">
                     <Image 
                         source={{ uri: seeker?.imageUrl || 'https://via.placeholder.com/150' }} 

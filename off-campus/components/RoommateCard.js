@@ -9,7 +9,7 @@ export const RoommateCard = ({ profile, onPress }) => {
     return (
         <TouchableOpacity 
             onPress={() => router.push(`/profile/${profile._id}`)}
-            className="mt-4 p-4 rounded-lg bg-white shadow-lg shadow-black-100/70"
+            className="mt-4 p-4 rounded-lg bg-[#fcfeff] shadow-md shadow-black-100/70"
         >
             <View className="flex-row items-center">
                 <Image 

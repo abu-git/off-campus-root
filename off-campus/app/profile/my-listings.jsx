@@ -52,10 +52,19 @@ const MyListingsScreen = () => {
                 contentContainerClassName="p-5"
                 ListHeaderComponent={() => (
                     <View className="mb-5">
-                         <TouchableOpacity onPress={() => router.back()} className="mb-4">
-                            <Text className="text-primary-300 text-base">← Back to Profile</Text>
-                        </TouchableOpacity>
-                        <Text style={{ fontFamily: 'Rubik-Bold' }} className="text-2xl text-black-300">My Listings</Text>
+                        <View className="flex-row justify-between items-center">
+                            <TouchableOpacity onPress={() => router.back()} className="mb-4">
+                                <Text className="text-primary-300 text-base">← Back to Profile</Text>
+                            </TouchableOpacity>
+                            {/* ✅ THE NEW BUTTON */}
+                            <TouchableOpacity 
+                                onPress={() => router.push('/listings/create')}
+                                className="bg-primary-300 px-4 py-2 rounded-full"
+                            >
+                                <Text className="text-white font-bold">+ New Listing</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <Text style={{ fontFamily: 'Rubik-Bold' }} className="text-2xl text-black-300 mt-4">My Listings</Text>
                     </View>
                 )}
                 renderItem={({ item }) => (
