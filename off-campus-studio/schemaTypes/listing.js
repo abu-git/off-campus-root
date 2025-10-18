@@ -36,7 +36,7 @@ export default defineType({
             validation: Rule => Rule.required(),
         }),
         defineField({ name: 'description', title: 'Description', type: 'text' }),
-        defineField({ name: 'price', title: 'Price (per month)', type: 'number', validation: Rule => Rule.required() }),
+        defineField({ name: 'price', title: 'Price (per year)', type: 'number', validation: Rule => Rule.required() }),
         defineField({ name: 'agent', title: 'Listing Agent/Contact', type: 'string' }),
         defineField({
             name: 'authorClerkId',
