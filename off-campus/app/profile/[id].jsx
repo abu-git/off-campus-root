@@ -7,15 +7,14 @@ import { getPersonProfileById } from '../../sanity'; // Import our new function
 
 // Helper component for clean, reusable rows
 const ProfileDetailRow = ({ label, value }) => (
-
-        <View className="py-3 border-b border-gray-200">
-            <Text style={{ fontFamily: 'Rubik-Medium' }} className="text-base text-gray-500">{label}</Text>
-            <Text style={{ fontFamily: 'Rubik-Regular' }} className="text-lg text-black-300 mt-1">{value}</Text>
-        </View>
+    <View className="py-3 border-b border-gray-200">
+        <Text style={{ fontFamily: 'Rubik-Medium' }} className="text-base text-gray-500">{label}</Text>
+        <Text style={{ fontFamily: 'Rubik-Regular' }} className="text-lg text-black-300 mt-1">{value || 'Not specified'}</Text>
+    </View>
 );
 
 const PublicProfileScreen = () => {
-    const { id } = useLocalSearchParams(); // Gets the profile ID from the URL
+    const { id } = useLocalSearchParams();
     const router = useRouter();
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -67,15 +66,41 @@ const PublicProfileScreen = () => {
                 {/* --- About Me Section --- */}
                 <View className="mt-8">
                     <Text style={{ fontFamily: 'Rubik-Bold' }} className="text-2xl text-black-300 mb-2">About Me</Text>
-                    <Text style={{ fontFamily: 'Rubik-Regular' }} className="text-base text-gray-700 leading-6">{profile.bio}</Text>
+                    <Text style={{ fontFamily: 'Rubik-Regular' }} className="text-base text-gray-700 leading-6">{profile.bio || 'No bio provided.'}</Text>
                 </View>
 
-                {/* --- Details Section --- */}
+                {/* --- Lifestyle Details Section --- */}
                 <View className="mt-8">
-                    <Text style={{ fontFamily: 'Rubik-Bold' }} className="text-2xl text-black-300 mb-2">Details</Text>
-                    <ProfileDetailRow label="Age" value={profile.age || 'Not specified'} />
-                    <ProfileDetailRow label="Cleanliness" value={profile.cleanliness || 'Not specified'} />
-                    <ProfileDetailRow label="Looking For" value={`A room up to ₦${profile.maxBudget?.toLocaleString()} / month`} />
+                    <Text style={{ fontFamily: 'Rubik-Bold' }} className="text-2xl text-black-300 mb-2">Lifestyle</Text>
+                    <ProfileDetailRow label="Age" value={profile.age} />
+                    <ProfileDetailRow label="Cleanliness" value={profile.cleanliness} />
+                    {/* ✅ Handle boolean values */}
+                    <ProfileDetailRow label="Smoker" value={profile.smoker ? 'Yes' : 'No'} />
+                    <ProfileDetailRow label="Has Pets" value={profile.hasPets ? 'Yes' : 'No'} />
+                </View>
+
+                {/* ✅ NEW: Social Habits Section (for arrays) */}
+                <View className="mt-8">
+                    <Text style={{ fontFamily: 'Rubik-Bold' }} className="text-2xl text-black-300 mb-2">Social Habits</Text>
+                    <View className="flex-row flex-wrap gap-2 items-center">
+                        {profile.socialHabits?.length > 0 ? (
+                            profile.socialHabits.map((habit, index) => (
+                                <Text key={index} style={{ fontFamily: 'Rubik-Bold' }} className="bg-primary-100 text-primary-300 px-3 py-1 rounded-full">
+                                    {habit}
+                                </Text>
+                            ))
+                        ) : (
+                            <Text style={{ fontFamily: 'Rubik-Regular' }} className="text-base text-gray-500">Not specified</Text>
+                        )}
+                    </View>
+                </View>
+
+                {/* --- Looking For Section --- */}
+                <View className="mt-8">
+                    <Text style={{ fontFamily: 'Rubik-Bold' }} className="text-2xl text-black-300 mb-2">Looking For</Text>
+                    <ProfileDetailRow label="Maximum Budget" value={`₦${profile.maxBudget?.toLocaleString()} / year`} />
+                    {/* ✅ Added Move-in Date */}
+                    <ProfileDetailRow label="Ideal Move-in Date" value={profile.moveInDate} />
                 </View>
             </ScrollView>
         </SafeAreaView>

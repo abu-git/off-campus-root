@@ -14,7 +14,7 @@ const TabIcon = ({ focused, icon, title, containerClassName }) => (
             className="size-5"
         />
         {/* We wrap the Text in a View with a fixed height to prevent any vertical shift */}
-        <View className="h-6 justify-center"> 
+        <View className="h-5 justify-center"> 
             <Text
                 className={`${
                     focused ? "text-primary-300" : "text-black-200"
@@ -53,7 +53,7 @@ const TabsLayout = () => {
                     title: 'Home',
                     headerShown: false,
                     tabBarIcon: ({ focused }) => (
-                        <TabIcon focused={focused} icon={icons.home} title="Home" containerClassName="mt-[-4px]" />
+                        <TabIcon focused={focused} icon={icons.home} title="Home" />
                     )
                 }}
             />

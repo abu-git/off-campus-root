@@ -37,7 +37,7 @@ export default function RootLayout() {
     <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
       <SafeAreaProvider>
         <StatusBar style='dark' />
-        <Stack screenOptions={{ headerShown: false }} />
+        <Stack screenOptions={{ headerShown: false }} className="text-dark" />
       </SafeAreaProvider>
     </ClerkProvider>
   );

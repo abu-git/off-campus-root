@@ -86,7 +86,7 @@ const PropertyDetail = () => {
 
     // --- Render Logic ---
     if (loading) {
-        return <SafeAreaView className="flex-1 justify-center items-center bg-white"><ActivityIndicator size="large" color="#FF8A00" /></SafeAreaView>;
+        return <SafeAreaView className="flex-1 justify-center items-center bg-white"><ActivityIndicator size="large" color="#0061FF" /></SafeAreaView>;
     }
     
     // ✅ 5. Define the dynamic button's text and action
@@ -188,10 +188,10 @@ const PropertyDetail = () => {
                     {/* Roommate Details Section */}
                     {listing?.listingType === 'sharedRoom' && (
                         <View className="mt-7 border-t border-primary-200 pt-7">
-                            <Text style={{ fontFamily: 'Rubik-Bold' }} className="text-black-300 text-xl">Roommate Details</Text>
+                            <Text style={{ fontFamily: 'Rubik-Bold' }} className="text-black-300 text-xl">Room Details</Text>
                             <View className="mt-4 flex flex-col gap-3">
                                 <Text style={{ fontFamily: 'Rubik-Regular' }}><Text style={{ fontFamily: 'Rubik-Bold' }}>Room Type:</Text> {listing?.roomType}</Text>
-                                <Text style={{ fontFamily: 'Rubik-Regular' }}><Text style={{ fontFamily: 'Rubik-Bold' }}>Current Occupants:</Text> {listing?.currentOccupants} people</Text>
+                                {/*<Text style={{ fontFamily: 'Rubik-Regular' }}><Text style={{ fontFamily: 'Rubik-Bold' }}>Current Occupants:</Text> {listing?.currentOccupants} people</Text>*/}
                                 <Text style={{ fontFamily: 'Rubik-Regular' }}><Text style={{ fontFamily: 'Rubik-Bold' }}>Private Bathroom:</Text> {listing?.privateBathroom ? 'Yes' : 'No'}</Text>
                                 <Text style={{ fontFamily: 'Rubik-Bold' }} className="mt-2">Household Vibe:</Text>
                                 <View className="flex flex-row flex-wrap gap-2 items-center">
