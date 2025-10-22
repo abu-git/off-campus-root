@@ -84,7 +84,7 @@ const ListerTabsLayout = () => {
                     headerShown: true, // Show header for Dashboard
                     tabBarIcon: ({ focused }) => (
                         // Use the copied TabIcon component and FULL title
-                        <TabIcon focused={focused} icon={icons.filter} title="Dashboard" />
+                        <TabIcon focused={focused} icon={icons.dashboard} title="Dashboard" />
                     )
                  }}
             />
@@ -95,7 +95,7 @@ const ListerTabsLayout = () => {
                     headerShown: true, // Show header for Settings
                     tabBarIcon: ({ focused }) => (
                          // Use the copied TabIcon component and FULL title
-                        <TabIcon focused={focused} icon={icons.person} title="Settings" />
+                        <TabIcon focused={focused} icon={icons.settings} title="Settings" />
                     )
                  }}
             />

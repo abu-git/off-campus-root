@@ -33,6 +33,8 @@ import wallet from "@/assets/icons/wallet.png";
 import wifi from "@/assets/icons/wifi.png";
 import user from "@/assets/icons/user.png";
 import users from "@/assets/icons/users.png";
+import settings from "@/assets/icons/settings.png";
+import dashboard from "@/assets/icons/dashboard.png";
 
 export default {
   google,
@@ -70,4 +72,6 @@ export default {
   edit,
   user,
   users,
+  settings,
+  dashboard,
 };
