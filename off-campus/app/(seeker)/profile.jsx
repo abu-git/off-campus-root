@@ -1,10 +1,9 @@
 import { useClerk, useUser } from '@clerk/clerk-expo';
 import { useFonts } from "expo-font";
 import { useRouter, Redirect } from 'expo-router';
-import React, { useEffect } from 'react';
+import React from 'react'; // Removed useEffect as it's not needed here
 import { ActivityIndicator, Alert, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
-import { settings } from '../../constants/data';
 import icons from "../../constants/icons";
 
 const SettingsItem = ({ icon, title, onPress, textStyle, showArrow = true }) => (
@@ -13,7 +12,6 @@ const SettingsItem = ({ icon, title, onPress, textStyle, showArrow = true }) => 
             <Image source={icon} className="size-6" />
             <Text style={{ fontFamily: 'Rubik-Medium' }} className={`text-lg text-black-300 ${textStyle}`}>{title}</Text>
         </View>
-
         {showArrow && <Image source={icons.rightArrow} className="size-5" />}
     </TouchableOpacity>
 );
@@ -27,23 +25,25 @@ const Profile = () => {
         "Rubik-Regular": require("../../assets/fonts/Rubik-Regular.ttf"),
         "Rubik-SemiBold": require("../../assets/fonts/Rubik-SemiBold.ttf"),
     });
-      
+
     const router = useRouter();
-    const { user, isSignedIn, isLoaded } = useUser();
+    // It's better to get isLoaded/isSignedIn from useAuth as useUser is for the user object itself
+    const { user, isLoaded, isSignedIn } = useUser();
     const { signOut } = useClerk();
 
-
+    // ✅ THE FIX IS HERE
     const onLogout = async () => {
         try {
+            // ONLY sign out. DO NOT navigate.
+            // RootLayoutNav will detect the isSignedIn change and handle the redirect.
             await signOut();
-            router.replace('/(auth)/sign-in');
         } catch (err) {
-            console.error(JSON.stringify(err, null, 2));
-            Alert.alert('Logout', JSON.stringify(err, null, 2));
+            console.error("Logout error:", JSON.stringify(err, null, 2));
+            Alert.alert('Logout Failed', 'Please try again.');
         }
     };
 
-    const handleLogout = async () => {
+    const handleLogout = () => { // No need for this to be async
         Alert.alert('Confirm', 'Are you sure you want to logout?', [
             { text: 'Cancel', style: 'cancel' },
             { text: 'Logout', onPress: onLogout, style: 'destructive' }
@@ -59,12 +59,10 @@ const Profile = () => {
         );
     }
 
-    // If not signed in, redirect
+    // This check is a safety net; RootLayoutNav should handle this redirect primarily.
     if (!isSignedIn) {
-        return <Redirect href="/(auth)/sign-in" />;
+        return <Redirect href="/" />;
     }
-
-    //console.log("My Clerk ID:", user.id)
 
     return (
         <SafeAreaView className='h-full bg-white'>
@@ -84,15 +82,15 @@ const Profile = () => {
                     </View>
                 </View>
 
-                {/* --- THIS IS THE SECTION TO UPDATE --- */}
+                {/* --- Links Section --- */}
                 <View className="flex flex-col mt-10">
-                <SettingsItem 
-                    icon={icons.send} // You'll need an 'outbox' or 'document' icon
-                    title="My Applications" 
-                    onPress={() => router.push('/profile/my-applications')} 
-                />
                     <SettingsItem 
-                        icon={icons.wallet} // You'll need a 'list' or 'home' icon
+                        icon={icons.send}
+                        title="My Applications" 
+                        onPress={() => router.push('/profile/my-applications')} 
+                    />
+                    <SettingsItem 
+                        icon={icons.wallet}
                         title="My Listings" 
                         onPress={() => router.push('/profile/my-listings')} 
                     />
@@ -101,18 +99,9 @@ const Profile = () => {
                         title="My Roommate Profile" 
                         onPress={() => router.push('/profile/edit')} 
                     />
-
-                    {/* Your existing items */}
-                    {/*<SettingsItem icon={icons.calendar} title="My Bookings" />
-                    <SettingsItem icon={icons.wallet} title="Payments" />*/}
                 </View>
 
-                {/*<View className="flex flex-col mt-5 border-t pt-5 border-primary-200">
-                    {settings.slice(2).map((item, index) => (
-                        <SettingsItem key={index} {...item} />
-                    ))}
-                </View>*/}
-
+                {/* --- Logout Section --- */}
                 <View className="flex flex-col border-t mt-5 pt-5 border-primary-200">
                     <SettingsItem
                         icon={icons.logout}
