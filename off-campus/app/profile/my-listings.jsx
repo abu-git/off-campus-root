@@ -53,7 +53,7 @@ const MyListingsScreen = () => {
                 ListHeaderComponent={() => (
                     <View className="mb-5">
                         <View className="flex-row justify-between items-center">
-                            <TouchableOpacity onPress={() => router.back()} className="mb-4">
+                            <TouchableOpacity onPress={() => router.push('/(seeker)/profile')} className="mb-4">
                                 <Text className="text-primary-300 text-base">← Back to Profile</Text>
                             </TouchableOpacity>
                             {/* ✅ THE NEW BUTTON */}

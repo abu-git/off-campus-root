@@ -4,9 +4,10 @@ import { useUser } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 // ✅ 1. Import Switch
-import { ActivityIndicator, Alert, ScrollView, Text, TextInput, TouchableOpacity, View, Switch } from 'react-native';
+import { ActivityIndicator, Alert, ScrollView, Text, TextInput, TouchableOpacity, View, Switch, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getPersonProfile, createOrUpdatePersonProfile } from '../../sanity';
+import icons from '../../constants/icons';
 
 const EditProfile = () => {
     // --- Hooks and Setup ---
@@ -101,9 +102,18 @@ const EditProfile = () => {
     return (
         <SafeAreaView className="bg-white h-full">
             <ScrollView contentContainerClassName="p-5" keyboardShouldPersistTaps="handled">
-                <Text style={{ fontFamily: 'Rubik-Bold' }} className="text-2xl text-black-300 mb-5">
-                    Edit Your Roommate Profile
-                </Text>
+                <View className="flex-row items-center justify-between mb-5">
+                    <TouchableOpacity
+                        onPress={() => router.push('/(seeker)/profile')}
+                        className="flex flex-row bg-primary-200 rounded-full p-3 items-center justify-center mr-4"
+                    >
+                        <Image source={icons.backArrow} className="size-5" />
+                    </TouchableOpacity>
+                    <Text style={{ fontFamily: 'Rubik-Bold' }} className="text-2xl text-black-300 flex-1 text-center">
+                        Edit Profile
+                    </Text>
+                     <View className="size-11" />
+                </View>
 
                 <Text style={{ fontFamily: 'Rubik-Medium' }} className="text-base text-black-200 mb-2">About Me</Text>
                 <TextInput

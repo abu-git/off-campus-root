@@ -205,6 +205,33 @@ export async function createListing(listingData) {
     }
 }
 
+// Count active listings for a specific user
+export async function countUserListings(clerkId) {
+    try {
+        const query = `count(*[_type == "listing" && authorClerkId == $clerkId])`;
+        const params = { clerkId };
+        const count = await sanityClient.fetch(query, params);
+        return count;
+    } catch (error) {
+        console.error("Error counting user listings:", error);
+        return 0; // Return 0 on error
+    }
+}
+
+// Count pending applications for all listings owned by a specific user
+export async function countPendingApplicationsForUser(clerkId) {
+    try {
+        // Find listings by user, then count applications for those listings where status is pending
+        const query = `count(*[_type == "application" && status == 'pending' && listing._ref in *[_type=="listing" && authorClerkId == $clerkId]._id ])`;
+        const params = { clerkId };
+        const count = await sanityClient.fetch(query, params);
+        return count;
+    } catch (error) {
+        console.error("Error counting pending applications:", error);
+        return 0; // Return 0 on error
+    }
+}
+
 
 // =================================================================
 // NEW PERSON PROFILE FUNCTIONS 👤

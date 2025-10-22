@@ -44,7 +44,7 @@ const SelectRoleScreen = () => {
         setUpdateAttempted(true); // Mark that we've started the update attempt
 
         try {
-            console.log(`[handleSelectRole] Calling user.update() with publicMetadata...`);
+            console.log(`[handleSelectRole] Calling user.update() with unsafeMetadata...`);
             await user.update({
                 unsafeMetadata: { role: role }
             });
