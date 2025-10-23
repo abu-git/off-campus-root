@@ -38,6 +38,8 @@ yarn-error.*
 
 app-example
 
+ ../off-campus-api/
+
 # generated native folders
 /ios
 /android
