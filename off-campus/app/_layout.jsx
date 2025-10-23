@@ -2,11 +2,11 @@
 import { ClerkProvider, useAuth, useUser } from '@clerk/clerk-expo';
 import { tokenCache } from '@clerk/clerk-expo/token-cache';
 import { useFonts } from "expo-font";
-import { Slot, useRouter, useSegments, Redirect } from "expo-router";
+import { Slot, useRouter, useSegments } from "expo-router"; // Import useRouter, removed Redirect
 import * as SplashScreen from "expo-splash-screen";
-import React, { useEffect } from "react";
-import { ActivityIndicator, View } from 'react-native';
-import "./global.css";
+import React, { useEffect } from "react"; // Import useEffect
+import { ActivityIndicator, View, Alert, Text } from 'react-native';
+import "./global.css"; // Ensure your global CSS/Tailwind setup is correct
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 
@@ -57,34 +57,77 @@ function RootLayoutNav() {
     const segments = useSegments(); // Current URL path segments
     const router = useRouter(); // Expo Router instance
 
-    // ** Effect for handling redirects based on auth state **
+    // Effect to handle all routing decisions based on auth state
     useEffect(() => {
+        console.log(`[Effect START] isLoaded=${isLoaded}, isSignedIn=${isSignedIn}, User?=${!!user}, Segments=${segments.join('/')}`);
+
         // **Guard 1: Wait until Clerk is fully initialized.**
         if (!isLoaded) {
+            console.log("[Effect EXIT] Clerk not loaded.");
             return; // Don't run routing logic until Clerk is ready
         }
 
         // Determine current route context
         const currentSegment = segments[0] || '';
         const isInAuthFlow = currentSegment === '(auth)';
-        const isInApp = currentSegment === '(seeker)' || currentSegment === '(lister)' || currentSegment === 'properties' || currentSegment === 'profile';
+        const isInApp = currentSegment === '(seeker)' || currentSegment === '(lister)';
+        const isPublicHome = currentSegment === 'index' || currentSegment === '';
 
-        console.log(`[Effect Check] isLoaded=${isLoaded}, isSignedIn=${isSignedIn}, User?=${!!user}, Segments=${segments.join('/')}`);
+        // **Guard 2: Handle the Signed In state.**
+        if (isSignedIn) {
+            // Signed in, but we MUST wait for the user object to be loaded.
+            if (!user) {
+                console.log("[Effect EXIT] Signed in, but user object not ready.");
+                return; // Wait for the user object after sign-in state is confirmed
+            }
 
-        if (!isSignedIn) {
-            // ** Signed Out Logic - Using useEffect for stability **
-            // If NOT signed in and trying to access a protected route (inApp)
+            // User object is available, proceed with role checks.
+            const role = user.unsafeMetadata?.role; // Using unsafeMetadata
+            console.log(`[Effect Logic] Signed In & User Loaded. Role: ${role}`);
+
+            if (role === 'seeker') {
+                // User has 'seeker' role. Ensure they are in the seeker section.
+                if (currentSegment !== '(seeker)') {
+                    console.log("[Effect ROUTE] -> Seeker");
+                    router.replace('/(seeker)'); // Programmatic redirect
+                }
+            } else if (role === 'lister') {
+                // User has 'lister' role. Ensure they are in the lister section.
+                if (currentSegment !== '(lister)') {
+                    console.log("[Effect ROUTE] -> Lister");
+                    router.replace('/(lister)/dashboard'); // Programmatic redirect
+                }
+            } else { // Role is missing or invalid.
+                // User is signed in but has no role assigned yet.
+                // Redirect them to the role selection screen, *unless* they are already in the auth flow.
+                if (!isInAuthFlow) {
+                    console.log(`[Effect ROUTE] -> Select Role (Role was: ${role})`);
+                    router.replace('/(auth)/select-role'); // Programmatic redirect
+                } else {
+                    // Already in auth flow (e.g., on select-role screen), let that screen handle logic.
+                    console.log("[Effect OK] No role, but currently in Auth flow.");
+                }
+            }
+
+        } else {
+            // **Guard 3: Handle the Signed Out state.**
+            console.log("[Effect Logic] Not Signed In.");
+            // If the user is not signed in and tries to access a protected route (inApp),
+            // redirect them home programmatically.
             if (isInApp) {
                 console.log("[Effect ROUTE] -> Public Home (Welcome)");
                 router.replace('/'); // Programmatic redirect
+            } else {
+                 console.log("[Effect OK] Not signed in, already on public/auth route.");
             }
         }
-    }, [isLoaded, isSignedIn, segments, router]); // Dependencies
+
+    }, [isLoaded, isSignedIn, user, segments, router]); // Effect dependencies
 
 
-    // ** Render Logic: Show spinner ONLY while Clerk is loading **
+    // **Render Logic: Show spinner ONLY while Clerk is loading.**
     if (!isLoaded) {
-        console.log("[Render] Clerk Loading Spinner");
+         console.log("[Render] Clerk Loading Spinner");
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
                 <ActivityIndicator size="large" color="#0061FF"/>
@@ -92,33 +135,8 @@ function RootLayoutNav() {
         );
     }
 
-    // Use declarative <Redirect /> for signed-in logic as it's more stable on initial load
-    if (isSignedIn) {
-        if (!user) {
-             console.log("[Render] Signed in, but user object not ready. Showing spinner.");
-             return (
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
-                    <ActivityIndicator size="large" color="#0061FF"/>
-                </View>
-            );
-        }
-
-        const role = user.unsafeMetadata?.role;
-        const currentSegment = segments[0] || '';
-        const isAllowedLocation = currentSegment === (role === 'seeker' ? '(seeker)' : '(lister)') || currentSegment === 'properties' || currentSegment === 'profile' || currentSegment === '(auth)';
-
-        if (!role && currentSegment !== '(auth)') {
-            return <Redirect href="/(auth)/select-role" />;
-        }
-
-        if (role && !isAllowedLocation) {
-            const target = role === 'seeker' ? '/(seeker)' : '/(lister)/dashboard';
-            return <Redirect href={target} />;
-        }
-    }
-    
-    // Clerk is loaded. Render Slot. The useEffect handles the logout redirect,
-    // and the direct return handles the signed-in logic.
-    console.log(`[Render] Rendering Slot for Segment: ${segments.join('/')}`);
+    // Clerk is loaded. Render the currently matched child route using <Slot />.
+    // The useEffect above will handle redirecting to the correct route AFTER this initial render.
+    console.log(`[Render] Clerk Loaded, Rendering Slot for Segment: ${segments.join('/')}`);
     return <Slot />;
 }

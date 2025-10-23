@@ -22,9 +22,9 @@ const SelectRoleScreen = () => {
 
     // Effect to redirect if role already exists
     useEffect(() => {
-        if (isLoaded && user?.publicMetadata?.role) {
+        if (isLoaded && user?.unsafeMetadata?.role) {
              console.log("[Select Role Effect] User already has role. Redirecting out.");
-             const role = user.publicMetadata.role;
+             const role = user.unsafeMetadata.role;
              if (role === 'seeker') router.replace('/(seeker)');
              else if (role === 'lister') router.replace('/(lister)/dashboard');
              else router.replace('/'); // Fallback

@@ -87,7 +87,7 @@ const ListerDashboard = () => {
                  />
                  <ActionButton
                     title="Manage Listings"
-                    onPress={() => router.push('/profile/my-listings')} // Link to existing screen
+                    onPress={() => router.push('/(lister)/listings')} // Link to existing screen
                  />
                  {/* Optional: Add "View All Applicants" button here */}
             </View>

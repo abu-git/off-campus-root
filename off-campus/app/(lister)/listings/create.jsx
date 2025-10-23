@@ -5,14 +5,14 @@ import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useUser } from '@clerk/clerk-expo';
 import { Picker } from '@react-native-picker/picker';
-import { createListing, getPropertiesForUser } from '../../sanity';
+import { createListing, getPropertiesForUser } from '../../../sanity';
 
 const CreateListingScreen = () => {
     // --- Hooks and Setup ---
     const [fontsLoaded] = useFonts({
-        "Rubik-Bold": require("../../assets/fonts/Rubik-Bold.ttf"),
-        "Rubik-Medium": require("../../assets/fonts/Rubik-Medium.ttf"),
-        "Rubik-Regular": require("../../assets/fonts/Rubik-Regular.ttf"),
+        "Rubik-Bold": require("../../../assets/fonts/Rubik-Bold.ttf"),
+        "Rubik-Medium": require("../../../assets/fonts/Rubik-Medium.ttf"),
+        "Rubik-Regular": require("../../../assets/fonts/Rubik-Regular.ttf"),
     });
     const router = useRouter();
     const { user } = useUser();
@@ -116,7 +116,7 @@ const CreateListingScreen = () => {
                 <Text style={{ fontFamily: 'Rubik-Medium' }} className="text-base mt-4 mb-2">Listing Title</Text>
                 <TextInput style={{ fontFamily: 'Rubik-Regular' }} value={title} onChangeText={setTitle} placeholder="e.g., Modern 2-Bed City Apartment" className="bg-gray-100 p-3 rounded-lg" />
                 
-                <Text style={{ fontFamily: 'Rubik-Medium' }} className="text-base mt-4 mb-2">Price (per month)</Text>
+                <Text style={{ fontFamily: 'Rubik-Medium' }} className="text-base mt-4 mb-2">Price (per year)</Text>
                 <TextInput style={{ fontFamily: 'Rubik-Regular' }} value={price} onChangeText={setPrice} placeholder="e.g., 150000" keyboardType="numeric" className="bg-gray-100 p-3 rounded-lg" />
                 
                 <Text style={{ fontFamily: 'Rubik-Medium' }} className="text-base mt-4 mb-2">Description</Text>
@@ -131,7 +131,7 @@ const CreateListingScreen = () => {
                 {/* --- Conditional Roommate Fields --- */}
                 {listingType === 'sharedRoom' && (
                     <View className="mt-4 border-t border-gray-200 pt-4">
-                        <Text style={{ fontFamily: 'Rubik-Bold' }} className="text-lg mb-4">Roommate Details</Text>
+                        <Text style={{ fontFamily: 'Rubik-Bold' }} className="text-lg mb-4">Room Details</Text>
                         
                         <Text style={{ fontFamily: 'Rubik-Medium' }} className="text-base mb-2">Room Type</Text>
                         <TextInput style={{ fontFamily: 'Rubik-Regular' }} value={roomType} onChangeText={setRoomType} placeholder="e.g., Private Room" className="bg-gray-100 p-3 rounded-lg" />

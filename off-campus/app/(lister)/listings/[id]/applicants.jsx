@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { ActivityIndicator, FlatList, Text, View, Image, TouchableOpacity, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { getApplicationsForListing, updateApplicationStatus } from '../../../sanity';
+import { getApplicationsForListing, updateApplicationStatus } from '../../../../sanity';
 
 // This is a new, specialized card component for this screen
 const ApplicantCard = ({ application, onStatusChange }) => {

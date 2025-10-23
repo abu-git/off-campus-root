@@ -35,6 +35,12 @@ import user from "@/assets/icons/user.png";
 import users from "@/assets/icons/users.png";
 import settings from "@/assets/icons/settings.png";
 import dashboard from "@/assets/icons/dashboard.png";
+import properties from "@/assets/icons/properties.png";
+import image from "@/assets/icons/image.png";
+import support from "@/assets/icons/support.png";
+import terms from "@/assets/icons/terms.png";
+import privacy from "@/assets/icons/shield2.png";
+import bell2 from "@/assets/icons/bell2.png";
 
 export default {
   google,
@@ -74,4 +80,10 @@ export default {
   users,
   settings,
   dashboard,
+  properties,
+  image,
+  support,
+  terms,
+  privacy,
+  bell2,
 };

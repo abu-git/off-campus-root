@@ -13,7 +13,7 @@ export default function AuthRoutesLayout() {
     // Allow access IF:
     // 1. User is NOT signed in OR
     // 2. User IS signed in, has NO role, AND is trying to access the select-role screen
-    if (isSignedIn && !user?.publicMetadata?.role && isSelectRoleScreen) {
+    if (isSignedIn && !user?.unsafeMetadata?.role && isSelectRoleScreen) {
         // Allow rendering select-role screen for users who need to choose a role
         return <Stack screenOptions={{ headerShown: false }} />;
     }

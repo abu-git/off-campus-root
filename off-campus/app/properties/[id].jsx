@@ -84,6 +84,16 @@ const PropertyDetail = () => {
         }
     };
 
+    // Function to handle back navigation based on role
+    const handleBackPress = () => {
+        const userRole = user?.unsafeMetadata?.role;
+        if (userRole === 'lister') {
+            router.push('/(lister)/listings'); // Explicitly go to Lister's listings screen
+        } else {
+            router.back(); // Default back behavior for Seekers or others
+        }
+    };
+
     // --- Render Logic ---
     if (loading) {
         return <SafeAreaView className="flex-1 justify-center items-center bg-white"><ActivityIndicator size="large" color="#0061FF" /></SafeAreaView>;
@@ -93,16 +103,39 @@ const PropertyDetail = () => {
     let buttonText = "Rent Now";
     let buttonAction = () => {};
     let buttonDisabled = false;
+    let showButton = true; // Flag to potentially hide button
+
+    // Get the current user's role
+    const userRole = user?.unsafeMetadata?.role;
 
     if (listing?.listingType === 'sharedRoom') {
-        if (hasApplied) {
-            buttonText = "Applied";
-            buttonDisabled = true;
+        if (userRole === 'lister') {
+            // Listers don't apply, they manage.
+            // Option 1: Show a "View Applicants" button (if this isn't their OWN listing)
+            // Option 2: Hide the button entirely for Listers viewing any shared room. Let's hide it for now.
+             showButton = false;
+             // Alternatively, if you want a button to view applicants *even if it's not theirs*:
+             // buttonText = "View Applicants";
+             // buttonAction = () => router.push(`/(lister)/listings/${listing._id}/applicants`); // Needs router import
+             // buttonDisabled = false;
+        } else if (userRole === 'seeker') {
+            // Seeker logic remains the same
+            if (hasApplied) {
+                buttonText = "Applied";
+                buttonDisabled = true;
+            } else {
+                buttonText = personProfile ? "Apply with Profile" : "Create Profile to Apply";
+                buttonAction = handleApply;
+                buttonDisabled = isApplying;
+            }
         } else {
-            buttonText = personProfile ? "Apply with Profile" : "Create Profile to Apply";
-            buttonAction = handleApply;
-            buttonDisabled = isApplying;
+             // Should not happen if roles are set correctly, maybe hide button?
+             showButton = false;
         }
+    }
+    // For 'entirePlace', button remains "Rent Now" for Seekers, maybe hide for Listers?
+    else if (listing?.listingType === 'entirePlace' && userRole === 'lister'){
+        showButton = false; // Listers likely don't rent entire places via this button
     }
 
     const mainImage = listing?.galleryUrls?.[0] || 'https://via.placeholder.com/400';
@@ -116,7 +149,7 @@ const PropertyDetail = () => {
                     <Image source={images.whiteGradient} className="absolute top-0 w-full z-40" />
                     <View className="z-50 absolute inset-x-7" style={{ top: Platform.OS === 'ios' ? 70 : 20 }}>
                         <View className="flex flex-row items-center w-full justify-between">
-                            <TouchableOpacity onPress={() => router.back()} className="flex flex-row bg-primary-200 rounded-full size-11 items-center justify-center">
+                            <TouchableOpacity onPress={handleBackPress} className="flex flex-row bg-primary-200 rounded-full size-11 items-center justify-center">
                                 <Image source={icons.backArrow} className="size-5" />
                             </TouchableOpacity>
                             <View className="flex flex-row items-center gap-3">
@@ -239,24 +272,23 @@ const PropertyDetail = () => {
                 </View>
             </ScrollView>
 
-            {/* ✅ 6. Update the bottom bar to use the dynamic variables */}
-            <SafeAreaView className="absolute bg-white bottom-0 w-full rounded-t-2xl border-t border-r border-l border-primary-200 px-9 py-5">
-                <View className="flex flex-row items-center justify-between gap-10">
-                    <View className="flex flex-col items-start">
-                        <Text style={{ fontFamily: 'Rubik-Medium' }} className="text-black-200 text-xs">Price</Text>
-                        <Text style={{ fontFamily: 'Rubik-Bold' }} numberOfLines={1} className="text-primary-300 text-start text-2xl">₦{listing?.price?.toLocaleString()}</Text>
+            {/* Conditionally render the bottom bar */}
+            {showButton && (
+                <SafeAreaView className="absolute bg-white bottom-0 w-full rounded-t-2xl border-t border-r border-l border-primary-200 px-9 py-5">
+                    <View className="flex flex-row items-center justify-between gap-10">
+                        {/* ... Price View ... */}
+                        <TouchableOpacity
+                            onPress={buttonAction}
+                            disabled={buttonDisabled}
+                            className={`flex-1 flex flex-row items-center justify-center py-3 rounded-full shadow-md shadow-zinc-400 ${buttonDisabled ? 'bg-gray-400' : 'bg-primary-300'}`}
+                        >
+                            <Text style={{ fontFamily: 'Rubik-Bold' }} className="text-white text-lg text-center">
+                                {isApplying ? "Applying..." : buttonText}
+                            </Text>
+                        </TouchableOpacity>
                     </View>
-                    <TouchableOpacity 
-                        onPress={buttonAction}
-                        disabled={buttonDisabled}
-                        className={`flex-1 flex-row items-center justify-center py-3 rounded-full shadow-md shadow-zinc-400 ${buttonDisabled ? 'bg-gray-400' : 'bg-primary-300'}`}
-                    >
-                        <Text style={{ fontFamily: 'Rubik-Bold' }} className="text-white text-md text-center">
-                            {isApplying ? "Applying..." : buttonText}
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-            </SafeAreaView>
+                </SafeAreaView>
+            )}
         </View>
     );
 };

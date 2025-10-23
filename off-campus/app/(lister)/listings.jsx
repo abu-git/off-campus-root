@@ -53,12 +53,12 @@ const MyListingsScreen = () => {
                 ListHeaderComponent={() => (
                     <View className="mb-5">
                         <View className="flex-row justify-between items-center">
-                            <TouchableOpacity onPress={() => router.push('/(seeker)/profile')} className="mb-4">
+                            <TouchableOpacity onPress={() => router.push('/(lister)/dashboard')} className="mb-4">
                                 <Text className="text-primary-300 text-base">← Back to Profile</Text>
                             </TouchableOpacity>
                             {/* ✅ THE NEW BUTTON */}
                             <TouchableOpacity 
-                                onPress={() => router.push('/listings/create')}
+                                onPress={() => router.push('/(lister)/listings/create')}
                                 className="bg-primary-300 px-4 py-2 rounded-full"
                             >
                                 <Text className="text-white font-bold">+ New Listing</Text>
@@ -69,11 +69,11 @@ const MyListingsScreen = () => {
                 )}
                 renderItem={({ item }) => (
                     <View>
-                        <Card item={item} onPress={() => router.push(`/properties/${item._id}`)} />
+                        <Card item={item} onPress={() => router.push(`/(lister)/listings/edit/${item._id}`)}/>
                         {/* Only show the applicants button for shared rooms */}
                         {item.listingType === 'sharedRoom' && (
                              <TouchableOpacity 
-                                onPress={() => router.push(`/listings/${item._id}/applicants`)}
+                                onPress={() => router.push(`/(lister)/listings/${item._id}/applicants`)}
                                 className="bg-primary-300 py-3 rounded-lg mt-2"
                              >
                                 <Text style={{ fontFamily: 'Rubik-Bold' }} className="text-white text-center">View Applicants</Text>

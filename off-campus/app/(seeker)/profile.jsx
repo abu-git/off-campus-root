@@ -89,11 +89,11 @@ const Profile = () => {
                         title="My Applications" 
                         onPress={() => router.push('/profile/my-applications')} 
                     />
-                    <SettingsItem 
+                    {/*<SettingsItem 
                         icon={icons.wallet}
                         title="My Listings" 
                         onPress={() => router.push('/profile/my-listings')} 
-                    />
+                    />*/}
                     <SettingsItem 
                         icon={icons.user} 
                         title="My Roommate Profile" 

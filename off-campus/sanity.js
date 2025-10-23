@@ -9,6 +9,35 @@ export const sanityClient = createClient({
     token: 'skTHKHDV3vxwL4lVprGATDGPpbK8fXl7jMgETufyI0Y8Uujpk5aVaH61SLB23TgmdWQfm0sN7hAZ8nzba8NIHD8kgmj6QJUr29Lb4ETAsvRcm8IlG15mERXkxDUHC6Ixa63ZDvzicKQGRBycSzAPk52I2PYqPOKJIc6TG1CFWdHDQvxKpSXE' // Needed for certain operations like updating content, accessing drafts or using draft perspectives
 })
 
+// Upload image
+export async function uploadSanityImage(imageUri) {
+    if (!imageUri) return null;
+
+    try {
+        console.log("Fetching image blob from:", imageUri);
+        // Fetch the image data as a blob
+        const response = await fetch(imageUri);
+        const imageBlob = await response.blob();
+        console.log("Image blob fetched successfully.");
+
+        // Determine content type (simple check, might need improvement for other types)
+        const contentType = imageBlob.type || 'image/jpeg';
+        console.log("Content type:", contentType);
+
+        // Upload the blob to Sanity's asset endpoint
+        console.log("Uploading image blob to Sanity...");
+        const asset = await sanityClient.assets.upload('image', imageBlob, {
+            contentType: contentType,
+            // filename: 'some-filename.jpg' // Optional: provide a filename
+        });
+        console.log("Sanity asset created:", asset);
+        return asset; // Returns the Sanity image asset document
+    } catch (error) {
+        console.error("Error uploading image to Sanity:", JSON.stringify(error, null, 2));
+        throw new Error(`Failed to upload image: ${error.message || 'Unknown Sanity error'}`);
+    }
+}
+
 
 // Get Featured Posts
 export async function getFeaturedProperties(){
@@ -95,6 +124,56 @@ export async function getPropertiesForUser(clerkId) {
     } catch (error) {
         console.error("Error fetching user's properties:", error);
         return [];
+    }
+}
+
+export async function createProperty(propertyData) {
+    try {
+        console.log("Attempting to create property with data:", propertyData); // Log input data
+
+        // Create the new document of type 'property'
+        const result = await sanityClient.create({
+            _type: 'property', // Ensure this matches your schema name
+            ...propertyData, // Spread the data from the form (name, area, type, etc.)
+            // We can add a publishedAt timestamp automatically if needed
+            // publishedAt: new Date().toISOString(),
+        });
+
+        console.log('Property created successfully:', result._id);
+        return result; // Return the newly created document object
+    } catch (error) {
+        console.error("Error creating property in Sanity:", JSON.stringify(error, null, 2)); // Log detailed error
+        // Re-throw a more specific error for the UI to handle
+        throw new Error(`Failed to create property: ${error.message || 'Unknown Sanity error'}`);
+    }
+}
+
+export async function updateProperty(propertyId, propertyData) {
+    try {
+        console.log(`Attempting to update property ${propertyId} with data:`, propertyData);
+
+        // Use patch to update specific fields of the document
+        const result = await sanityClient
+            .patch(propertyId) // Use the document ID to target the patch
+            .set({ // Use 'set' to overwrite fields with new values
+                name: propertyData.name,
+                area: propertyData.area,
+                type: propertyData.type,
+                totalBedrooms: propertyData.totalBedrooms,
+                totalBathrooms: propertyData.totalBathrooms,
+                facilities: propertyData.facilities,
+                // You might need a separate mechanism to update the gallery
+                // if you want to add/remove images without replacing the whole array.
+                // For simplicity now, we can overwrite it if gallery data is included.
+                ...(propertyData.gallery && { gallery: propertyData.gallery })
+            })
+            .commit(); // Commit the changes
+
+        console.log('Property updated successfully:', result._id);
+        return result;
+    } catch (error) {
+        console.error("Error updating property in Sanity:", JSON.stringify(error, null, 2));
+        throw new Error(`Failed to update property: ${error.message || 'Unknown Sanity error'}`);
     }
 }
 
@@ -202,6 +281,33 @@ export async function createListing(listingData) {
     } catch (error) {
         console.error("Error creating listing:", error);
         throw new Error('Failed to create listing.');
+    }
+}
+
+
+export async function updateListing(listingId, listingData) {
+    try {
+        console.log(`Updating listing ${listingId} with:`, listingData);
+        // Use patch to update specific fields
+        const result = await sanityClient
+            .patch(listingId)
+            .set({ // Use 'set' for fields you want to overwrite
+                title: listingData.title,
+                price: listingData.price,
+                description: listingData.description,
+                roomType: listingData.roomType, // Will be ignored if not present
+                privateBathroom: listingData.privateBathroom,
+                currentOccupants: listingData.currentOccupants,
+                householdVibe: listingData.householdVibe,
+                houseRules: listingData.houseRules,
+                // Add other fields as needed
+            })
+            .commit();
+        console.log("Listing updated:", result);
+        return result;
+    } catch (error) {
+        console.error("Error updating listing:", JSON.stringify(error, null, 2));
+        throw new Error(`Failed to update listing: ${error.message || 'Unknown error'}`);
     }
 }
 
