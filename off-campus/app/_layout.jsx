@@ -2,132 +2,70 @@
 import { ClerkProvider, useAuth, useUser } from '@clerk/clerk-expo';
 import { tokenCache } from '@clerk/clerk-expo/token-cache';
 import { useFonts } from "expo-font";
-import { Slot, useRouter, useSegments } from "expo-router"; // Import useRouter, removed Redirect
+import { Slot, useRouter, useSegments, Redirect, useGlobalSearchParams } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import React, { useEffect } from "react"; // Import useEffect
-import { ActivityIndicator, View, Alert, Text } from 'react-native';
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, View, Alert } from 'react-native';
 import "./global.css"; // Ensure your global CSS/Tailwind setup is correct
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
+// Prevent the splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
-    "Rubik-Bold": require("../assets/fonts/Rubik-Bold.ttf"),
-    "Rubik-ExtraBold": require("../assets/fonts/Rubik-ExtraBold.ttf"),
-    "Rubik-Light": require("../assets/fonts/Rubik-Light.ttf"),
-    "Rubik-Medium": require("../assets/fonts/Rubik-Medium.ttf"),
-    "Rubik-Regular": require("../assets/fonts/Rubik-Regular.ttf"),
-    "Rubik-SemiBold": require("../assets/fonts/Rubik-SemiBold.ttf"),
+    "Rubik-Bold": require("../assets/fonts/Rubik-Bold.ttf"), // Adjust path if needed
+    "Rubik-ExtraBold": require("../assets/fonts/Rubik-ExtraBold.ttf"), // Adjust path if needed
+    "Rubik-Light": require("../assets/fonts/Rubik-Light.ttf"), // Adjust path if needed
+    "Rubik-Medium": require("../assets/fonts/Rubik-Medium.ttf"), // Adjust path if needed
+    "Rubik-Regular": require("../assets/fonts/Rubik-Regular.ttf"), // Adjust path if needed
+    "Rubik-SemiBold": require("../assets/fonts/Rubik-SemiBold.ttf"), // Adjust path if needed
   });
 
-  // IMPORTANT: Replace with your actual Clerk Publishable Key from your Clerk Dashboard
-  const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY || 'pk_test_dGVuZGVyLWJpcmQtMTAuY2xlcmsuYWNjb3VudHMuZGV2JA';
+  // IMPORTANT: Replace with your actual Clerk Publishable Key
+  const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY || 'pk_test_YOUR_KEY_HERE';
 
   useEffect(() => {
     if (fontsLoaded || fontError) {
-      // Hide the splash screen once fonts are loaded or an error occurs
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded, fontError]);
 
-  // Prevent rendering anything until fonts are loaded or an error occurs
+  // Don't render anything until fonts are loaded or an error occurs
   if (!fontsLoaded && !fontError) {
     return null;
   }
 
-  // Set up the Clerk provider at the root
+  // Set up Clerk provider at the root
   return (
     <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
       <SafeAreaProvider>
         <StatusBar style='dark' />
-        {/* Render the navigation component which handles routing */}
         <RootLayoutNav />
       </SafeAreaProvider>
     </ClerkProvider>
   );
 }
 
-// This component contains the core routing logic and runs inside the ClerkProvider context
+// Component containing core routing logic
 function RootLayoutNav() {
-    const { isLoaded, isSignedIn } = useAuth(); // Clerk Auth state
-    const { user } = useUser(); // Clerk User object
-    const segments = useSegments(); // Current URL path segments
-    const router = useRouter(); // Expo Router instance
+    const { isLoaded, isSignedIn } = useAuth();
+    const { user } = useUser();
+    const segments = useSegments();
+    const router = useRouter(); // Keep for programmatic navigation (clearing params)
+    const params = useGlobalSearchParams();
+    const roleIntent = params?.role_intent; // Role passed from sign-in param
+    // State to prevent multiple attempts at setting initial role
+    const [isSettingInitialRole, setIsSettingInitialRole] = useState(false);
 
-    // Effect to handle all routing decisions based on auth state
-    useEffect(() => {
-        console.log(`[Effect START] isLoaded=${isLoaded}, isSignedIn=${isSignedIn}, User?=${!!user}, Segments=${segments.join('/')}`);
+    // REMOVED useEffect for logout redirect
 
-        // **Guard 1: Wait until Clerk is fully initialized.**
-        if (!isLoaded) {
-            console.log("[Effect EXIT] Clerk not loaded.");
-            return; // Don't run routing logic until Clerk is ready
-        }
+    // --- Render Logic ---
 
-        // Determine current route context
-        const currentSegment = segments[0] || '';
-        const isInAuthFlow = currentSegment === '(auth)';
-        const isInApp = currentSegment === '(seeker)' || currentSegment === '(lister)';
-        const isPublicHome = currentSegment === 'index' || currentSegment === '';
-
-        // **Guard 2: Handle the Signed In state.**
-        if (isSignedIn) {
-            // Signed in, but we MUST wait for the user object to be loaded.
-            if (!user) {
-                console.log("[Effect EXIT] Signed in, but user object not ready.");
-                return; // Wait for the user object after sign-in state is confirmed
-            }
-
-            // User object is available, proceed with role checks.
-            const role = user.unsafeMetadata?.role; // Using unsafeMetadata
-            console.log(`[Effect Logic] Signed In & User Loaded. Role: ${role}`);
-
-            if (role === 'seeker') {
-                // User has 'seeker' role. Ensure they are in the seeker section.
-                if (currentSegment !== '(seeker)') {
-                    console.log("[Effect ROUTE] -> Seeker");
-                    router.replace('/(seeker)'); // Programmatic redirect
-                }
-            } else if (role === 'lister') {
-                // User has 'lister' role. Ensure they are in the lister section.
-                if (currentSegment !== '(lister)') {
-                    console.log("[Effect ROUTE] -> Lister");
-                    router.replace('/(lister)/dashboard'); // Programmatic redirect
-                }
-            } else { // Role is missing or invalid.
-                // User is signed in but has no role assigned yet.
-                // Redirect them to the role selection screen, *unless* they are already in the auth flow.
-                if (!isInAuthFlow) {
-                    console.log(`[Effect ROUTE] -> Select Role (Role was: ${role})`);
-                    router.replace('/(auth)/select-role'); // Programmatic redirect
-                } else {
-                    // Already in auth flow (e.g., on select-role screen), let that screen handle logic.
-                    console.log("[Effect OK] No role, but currently in Auth flow.");
-                }
-            }
-
-        } else {
-            // **Guard 3: Handle the Signed Out state.**
-            console.log("[Effect Logic] Not Signed In.");
-            // If the user is not signed in and tries to access a protected route (inApp),
-            // redirect them home programmatically.
-            if (isInApp) {
-                console.log("[Effect ROUTE] -> Public Home (Welcome)");
-                router.replace('/'); // Programmatic redirect
-            } else {
-                 console.log("[Effect OK] Not signed in, already on public/auth route.");
-            }
-        }
-
-    }, [isLoaded, isSignedIn, user, segments, router]); // Effect dependencies
-
-
-    // **Render Logic: Show spinner ONLY while Clerk is loading.**
+    // 1. Loading State: Wait for Clerk to be fully ready
     if (!isLoaded) {
-         console.log("[Render] Clerk Loading Spinner");
+        console.log("[Render] Clerk not loaded, showing spinner.");
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
                 <ActivityIndicator size="large" color="#0061FF"/>
@@ -135,8 +73,100 @@ function RootLayoutNav() {
         );
     }
 
-    // Clerk is loaded. Render the currently matched child route using <Slot />.
-    // The useEffect above will handle redirecting to the correct route AFTER this initial render.
-    console.log(`[Render] Clerk Loaded, Rendering Slot for Segment: ${segments.join('/')}`);
-    return <Slot />;
+    // Determine current location context AFTER Clerk is loaded
+    const currentSegment = segments[0] || '';
+    const isInAuthFlow = currentSegment === '(auth)';
+    const isPublicHome = currentSegment === 'index' || currentSegment === '';
+
+    // 2. Handle Signed In State
+    if (isSignedIn) {
+        // MUST wait for user object after confirming isSignedIn
+        if (!user) {
+             console.log("[Render] Signed in, but user object not ready. Showing spinner.");
+             return (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
+                    <ActivityIndicator size="large" color="#0061FF"/>
+                </View>
+            );
+        }
+
+        const metadataRole = user.unsafeMetadata?.role; // Read from unsafeMetadata
+        console.log(`[Render] Signed In. Role Intent Param: ${roleIntent}, Metadata Role: ${metadataRole}`);
+
+        // ** CASE 1: First login - Role Intent exists, Metadata role doesn't, AND not already setting it **
+        if (roleIntent && typeof roleIntent === 'string' && !metadataRole && !isSettingInitialRole) {
+            console.log(`[Render] First login detected via role_intent. Setting role to: ${roleIntent}`);
+            setIsSettingInitialRole(true); // Prevent re-entry
+
+            // Use an immediately-invoked async function for the update
+            (async () => {
+                try {
+                    await user.update({ unsafeMetadata: { role: roleIntent } });
+                    console.log(`[Render Update] Role set to ${roleIntent}. Refreshing route by replacing params...`);
+                    // IMPORTANT: Force re-render/re-evaluation by navigating to root WITHOUT the param
+                     router.replace({ pathname: '/', params: {} }); // Clear params
+                } catch (err) {
+                    console.error("[Render Update] Error setting initial role:", err);
+                    Alert.alert("Error", "Could not set your role. Please try signing in again.");
+                    setIsSettingInitialRole(false); // Reset flag on error
+                    router.replace('/'); // Go back to welcome on error
+                }
+                // No finally needed here as navigation should change state
+            })();
+
+            // Show spinner while the async update function runs
+            return (
+                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
+                    <ActivityIndicator size="large" color="#0061FF"/>
+                 </View>
+            );
+        }
+
+        // ** CASE 2: Role Exists in Metadata (or finished setting in Case 1, or roleIntent handled/irrelevant) **
+        // Reset the flag if we are past the initial role setting stage and metadata role now exists
+        if (isSettingInitialRole && metadataRole) {
+             setIsSettingInitialRole(false);
+        }
+
+        const effectiveRole = metadataRole; // Now rely solely on metadata for routing decisions
+
+        // Define allowed segments based on the effective role
+        const primaryLayout = effectiveRole === 'seeker' ? '(seeker)' : effectiveRole === 'lister' ? '(lister)' : null;
+        
+        const isAllowedLocation =
+            currentSegment === primaryLayout ||
+            currentSegment === 'properties' ||
+            currentSegment === 'profile' ||
+            isInAuthFlow
+
+        if (effectiveRole === 'seeker' || effectiveRole === 'lister') {
+             // If they have a role but are NOT in an allowed location, redirect them
+            if (!isAllowedLocation) {
+                 const target = effectiveRole === 'seeker' ? '/(seeker)' : '/(lister)/dashboard';
+                 console.log(`[Redirect] Role '${effectiveRole}' exists. Outside allowed area. -> ${target}`);
+                 return <Redirect href={target} />;
+            }
+        } else { // No role in metadata (and no roleIntent being processed from Case 1)
+            // Needs role selection, redirect if NOT currently in auth flow
+            if (!isInAuthFlow) {
+                 console.log(`[Redirect] -> Select Role (Metadata Role was: ${effectiveRole})`);
+                 // Don't pass params when redirecting TO select-role
+                 return <Redirect href="/(auth)/select-role" />;
+            }
+             // If already in auth flow (select-role screen), Slot will render it below
+        }
+        // If user is in an allowed location for their role, render Slot
+        console.log("[Render] Rendering Slot for signed-in user.");
+        return <Slot />;
+
+    } else {
+        // ** 3. Handle Signed Out State ** (Render phase)
+        console.log("[Render] Not Signed In.");
+        // ** CHANGE: No Redirect here. Let child components handle it. **
+        // Render Slot allows access to public home ('index') and auth routes.
+        // Protected routes rendered via Slot should check isSignedIn themselves.
+        console.log("[Render] Rendering Slot (may be protected route). Child must handle redirect if needed.");
+        return <Slot />;
+    }
 }
+

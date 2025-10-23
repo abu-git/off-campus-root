@@ -6,12 +6,16 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useUser } from '@clerk/clerk-expo'; // ✅ 1. Import useUser
 
 // ✅ 2. Import the new application and profile functions
-import { getListingDetails, getAgent, getPersonProfile, submitApplication, checkIfApplicationExists } from "../../sanity";
-import images from "../../constants/images";
-import icons from "../../constants/icons";
-import { facilities } from "../../constants/data";
+import { getListingDetails, getAgent, getPersonProfile, submitApplication, checkIfApplicationExists } from "../../../sanity";
+import images from "../../../constants/images";
+import icons from "../../../constants/icons";
+import { facilities } from "../../../constants/data";
+
+console.log("--- app/properties/[id].jsx file loaded ---");
 
 const PropertyDetail = () => {
+    console.log("--- PropertyDetail component rendering ---");
+
     // --- Hooks and Setup ---
     const { id } = useLocalSearchParams();
     const { user } = useUser(); // Get the current logged-in user
@@ -276,13 +280,19 @@ const PropertyDetail = () => {
             {showButton && (
                 <SafeAreaView className="absolute bg-white bottom-0 w-full rounded-t-2xl border-t border-r border-l border-primary-200 px-9 py-5">
                     <View className="flex flex-row items-center justify-between gap-10">
-                        {/* ... Price View ... */}
+                        <View className="flex flex-col items-start">
+                            <Text style={{ fontFamily: 'Rubik-Medium' }} className="text-black-200 text-xs">Price</Text>
+                            <Text style={{ fontFamily: 'Rubik-Bold' }} numberOfLines={1} className="text-primary-300 text-start text-2xl">
+                                {/* Format the number to include commas */}
+                                ₦{listing?.price?.toLocaleString('en-US')}
+                            </Text>
+                        </View>
                         <TouchableOpacity
                             onPress={buttonAction}
                             disabled={buttonDisabled}
                             className={`flex-1 flex flex-row items-center justify-center py-3 rounded-full shadow-md shadow-zinc-400 ${buttonDisabled ? 'bg-gray-400' : 'bg-primary-300'}`}
                         >
-                            <Text style={{ fontFamily: 'Rubik-Bold' }} className="text-white text-lg text-center">
+                            <Text style={{ fontFamily: 'Rubik-Bold' }} className="text-white text-md text-center px-2">
                                 {isApplying ? "Applying..." : buttonText}
                             </Text>
                         </TouchableOpacity>

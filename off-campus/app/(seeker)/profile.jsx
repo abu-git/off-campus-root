@@ -59,10 +59,12 @@ const Profile = () => {
         );
     }
 
-    // This check is a safety net; RootLayoutNav should handle this redirect primarily.
+    // If Clerk is loaded but user is not signed in, redirect from here
     if (!isSignedIn) {
+        console.log("[(seeker)/profile] Not signed in. Redirecting to /");
         return <Redirect href="/" />;
     }
+    
 
     return (
         <SafeAreaView className='h-full bg-white'>

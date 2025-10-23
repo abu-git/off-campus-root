@@ -71,7 +71,7 @@ const Index = () => {
         }
     };
 
-    const handleCardPress = (id) => router.push(`/properties/${id}`);
+    const handleCardPress = (id) => router.push(`properties/${id}`)
 
     const loadInitial = async () => {
         setLoading(true);

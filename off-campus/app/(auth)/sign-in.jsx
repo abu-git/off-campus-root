@@ -1,15 +1,16 @@
 // File: app/(auth)/sign-in.jsx
-import { useSSO, useAuth } from "@clerk/clerk-expo";
+import { useSSO, useAuth, useClerk } from "@clerk/clerk-expo";
 import * as AuthSession from 'expo-auth-session';
 import { useFonts } from "expo-font";
 import * as WebBrowser from 'expo-web-browser';
-import { Redirect, useLocalSearchParams } from "expo-router"; // Removed useRouter
+import { Redirect, useRouter, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useState, useEffect } from 'react';
 import { Alert, Image, Platform, ScrollView, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import icons from "../../constants/icons";
-import images from '../../constants/images';
+import icons from "../../constants/icons"; // Adjust path if needed
+import images from '../../constants/images'; // Adjust path if needed
 
+// Preloads the browser
 export const useWarmUpBrowser = () => {
     useEffect(() => {
         if (Platform.OS !== 'android') return;
@@ -17,97 +18,10 @@ export const useWarmUpBrowser = () => {
         return () => { void WebBrowser.coolDownAsync(); };
     }, []);
 };
+
 WebBrowser.maybeCompleteAuthSession();
 
 const SignIn = () => {
-    useWarmUpBrowser();
-    const { startSSOFlow } = useSSO();
-    const { isSignedIn, isLoaded: isAuthLoaded } = useAuth();
-    const { role } = useLocalSearchParams();
-    const [isAuthenticating, setIsAuthenticating] = useState(false);
-
-    console.log('role: ', role)
-
-    const onPress = useCallback(async () => {
-        setIsAuthenticating(true);
-        try {
-            const { createdSessionId, setActive } = await startSSOFlow({
-                strategy: 'oauth_google',
-                redirectUrl: AuthSession.makeRedirectUri(),
-            });
-
-            if (createdSessionId) {
-                // ✅ KEY CHANGE: ONLY set the session active. DO NOT redirect.
-                // RootLayoutNav will detect the isSignedIn change and handle routing.
-                setActive({ session: createdSessionId });
-            } else {
-                setIsAuthenticating(false);
-            }
-        } catch (err) {
-            console.error("OAuth error:", JSON.stringify(err, null, 2));
-            Alert.alert('Authentication Error', 'Could not sign in with Google.');
-            setIsAuthenticating(false);
-        }
-    }, [setActive, startSSOFlow]);
-
-    // Font loading...
-    const [fontsLoaded] = useFonts({
-        "Rubik-Bold": require("../../assets/fonts/Rubik-Bold.ttf"),
-        "Rubik-Medium": require("../../assets/fonts/Rubik-Medium.ttf"),
-        "Rubik-Regular": require("../../assets/fonts/Rubik-Regular.ttf"),
-        // ... other fonts
-    });
-
-    if (!fontsLoaded || !isAuthLoaded) {
-        return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><ActivityIndicator size="large" /></View>;
-    }
-
-    // If already signed in, RootLayoutNav will handle redirecting away from this screen.
-    // The Redirect here is a safety net.
-    if (isSignedIn) {
-        return <Redirect href={'/'} />;
-    }
-
-    return (
-        <SafeAreaView className='bg-white h-full'>
-            {/* ... Your Sign In UI (remains the same) ... */}
-            <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between' }}>
-                 <Image source={images.onboarding} className='w-full h-3/5' contentFit='contain' />
-                <View className="px-10 pb-10">
-                     <Text className="text-center text-black-200" style={{ fontFamily: 'Rubik-Regular', fontSize: 17, textTransform: 'uppercase' }}>
-                        Welcome To Off Campus
-                    </Text>
-                     <Text style={{ fontFamily: 'Rubik-Bold', fontSize: 24 }} className="text-3xl text-black-300 text-center mt-2">
-                        Let's Get You Closer To {"\n"}
-                        <Text className="text-primary-300">Your Ideal Residence</Text>
-                    </Text>
-                     <Text style={{ fontFamily: 'Rubik-Regular', fontSize: 15 }} className="text-lg text-black-200 text-center mt-8">
-                        Sign in as a <Text style={{ fontFamily: 'Rubik-Bold' }}>{role || 'user'}</Text> with Google
-                    </Text>
-                     {isAuthenticating ? (
-                         <View className="h-[68px] justify-center items-center">
-                            <ActivityIndicator size="large" color="#0061FF"/>
-                         </View>
-                    ) : (
-                        <TouchableOpacity onPress={onPress} className="bg-white shadow-md shadow-zinc-300 rounded-full w-full py-4 mt-5">
-                           <View className="flex flex-row items-center justify-center">
-                                <Image source={icons.google} className="w-5 h-5" resizeMode="contain" />
-                                <Text style={{ fontFamily: 'Rubik-Medium' }} className="text-lg text-black-300 ml-2">
-                                    Continue with Google
-                                </Text>
-                            </View>
-                        </TouchableOpacity>
-                    )}
-                </View>
-            </ScrollView>
-        </SafeAreaView>
-    );
-};
-
-export default SignIn;
-
-
-const OldSignIn = () => {
     useWarmUpBrowser();
 
     const { startSSOFlow } = useSSO();
@@ -120,7 +34,7 @@ const OldSignIn = () => {
     // Function to start the Google SSO flow
     const onPress = useCallback(async () => {
         if (!role) {
-            Alert.alert("Selection Error", "Please go back and select a role.");
+            Alert.alert("Role Error", "Please go back and select a role first.");
             return;
         }
         setIsAuthenticating(true);
@@ -132,19 +46,22 @@ const OldSignIn = () => {
 
             if (createdSessionId) {
                 setActive({ session: createdSessionId });
-                // **CRITICAL:** Immediately redirect to root after setting active.
-                // Let RootLayoutNav handle ALL subsequent logic.
-                console.log("[Sign-In OnPress] Session activated. Redirecting to root ('/').");
-                router.replace('/');
+                // ** CRITICAL CHANGE: Immediately redirect to root, PASSING the intended role **
+                console.log(`[Sign-In OnPress] Session active. Redirecting to root with role_intent: ${role}`);
+                router.replace({
+                    pathname: '/',
+                    params: { role_intent: role } // Pass role intent
+                });
             } else {
+                // User might have cancelled or MFA might be needed
                 setIsAuthenticating(false);
             }
         } catch (err) {
             console.error("OAuth error:", JSON.stringify(err, null, 2));
-            Alert.alert('Authentication Error', 'Could not sign in with Google.');
+            Alert.alert('Authentication Error', 'Could not sign in with Google. Please try again.');
             setIsAuthenticating(false);
         }
-    }, [role, setActive, router, startSSOFlow]); // Include dependencies
+    }, [role, setActive, router, startSSOFlow]); // Include role and router
 
     // Font loading
     const [fontsLoaded] = useFonts({
@@ -168,14 +85,24 @@ const OldSignIn = () => {
         return <Redirect href={'/'} />;
     }
 
+    // If no role is passed, redirect back to the welcome screen to force selection.
+    if (!role) {
+        console.warn("[Sign-In] Role parameter missing. Redirecting to Welcome screen ('/').");
+        return <Redirect href={'/'} />;
+    }
+
     // Render the Sign In UI
     return (
         <SafeAreaView className='bg-white h-full'>
             <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between' }}>
                 <Image source={images.onboarding} className='w-full h-3/5' contentFit='contain' />
                 <View className="px-10 pb-10">
-                     <Text className="text-center text-black-200" style={{ fontFamily: 'Rubik-Regular', fontSize: 17, textTransform: 'uppercase' }}>Welcome To Off Campus</Text>
-                     <Text style={{ fontFamily: 'Rubik-Bold', fontSize: 24 }} className="text-3xl text-black-300 text-center mt-2">Let's Get You Closer To {"\n"}<Text className="text-primary-300">Your Ideal Residence</Text></Text>
+                     <Text className="text-center text-black-200" style={{ fontFamily: 'Rubik-Regular', fontSize: 17, textTransform: 'uppercase' }}>
+                        Welcome To Off Campus
+                     </Text>
+                     <Text style={{ fontFamily: 'Rubik-Bold', fontSize: 24 }} className="text-3xl text-black-300 text-center mt-2">
+                        Let's Get You Closer To {"\n"}<Text className="text-primary-300">Your Ideal Residence</Text>
+                     </Text>
                      <Text style={{ fontFamily: 'Rubik-Regular', fontSize: 15 }} className="text-lg text-black-200 text-center mt-8">
                          Sign in as a <Text style={{ fontFamily: 'Rubik-Bold' }}>{role || 'user'}</Text> with Google
                      </Text>
@@ -200,3 +127,5 @@ const OldSignIn = () => {
         </SafeAreaView>
     );
 };
+
+export default SignIn;

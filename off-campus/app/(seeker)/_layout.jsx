@@ -91,6 +91,18 @@ const TabsLayout = () => {
                     ),
                 }}
             />
+
+            <Tabs.Screen
+                name="properties/[id]" // Match the new file path
+                options={{
+                    // Hide the tab bar when this screen is active
+                    tabBarStyle: { display: "none" },
+                    // Hide this screen from appearing AS a tab
+                    href: null,
+                    // Hide the header for this screen
+                    headerShown: false,
+                }}
+            />
         </Tabs>
     );
 };
