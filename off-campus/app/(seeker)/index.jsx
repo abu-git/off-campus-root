@@ -7,7 +7,7 @@ import { Card, FeaturedCard } from '../../components/Cards';
 import Search from '../../components/Search2';
 import icons from '../../constants/icons';
 import Filters from '../../components/Filters';
-import { router, Redirect } from 'expo-router';
+import { useRouter, Redirect } from 'expo-router';
 
 // ✅ 1. Import the new listing functions from sanity.js
 import { getFeaturedListings, getHomeListings, searchListings } from '../../sanity';
@@ -15,6 +15,7 @@ import { getFeaturedListings, getHomeListings, searchListings } from '../../sani
 const Index = () => {
     const { isSignedIn, isLoaded } = useAuth();
     const { user } = useUser();
+    const router = useRouter();
 
     // Font loading...
     const [fontsLoaded] = useFonts({
@@ -71,7 +72,10 @@ const Index = () => {
         }
     };
 
-    const handleCardPress = (id) => router.push(`properties/${id}`)
+    const handleCardPress = (id) => {
+        console.log(`Navigating to /properties/${id} (relative)`);
+        router.push(`/(seeker)/properties/${id}`); 
+    };
 
     const loadInitial = async () => {
         setLoading(true);

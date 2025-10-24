@@ -6,17 +6,17 @@ import { useEffect, useState } from 'react';
 // ✅ 1. Import Switch
 import { ActivityIndicator, Alert, ScrollView, Text, TextInput, TouchableOpacity, View, Switch, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { getPersonProfile, createOrUpdatePersonProfile } from '../../sanity';
-import icons from '../../constants/icons';
+import { getPersonProfile, createOrUpdatePersonProfile } from '../../../sanity';
+import icons from '../../../constants/icons';
 
 const EditProfile = () => {
     // --- Hooks and Setup ---
     const { user } = useUser();
     const router = useRouter();
     const [fontsLoaded] = useFonts({
-        "Rubik-Bold": require("../../assets/fonts/Rubik-Bold.ttf"),
-        "Rubik-Medium": require("../../assets/fonts/Rubik-Medium.ttf"),
-        "Rubik-Regular": require("../../assets/fonts/Rubik-Regular.ttf"),
+        "Rubik-Bold": require("../../../assets/fonts/Rubik-Bold.ttf"),
+        "Rubik-Medium": require("../../../assets/fonts/Rubik-Medium.ttf"),
+        "Rubik-Regular": require("../../../assets/fonts/Rubik-Regular.ttf"),
     });
 
     // ✅ 2. State for all form fields
@@ -104,7 +104,7 @@ const EditProfile = () => {
             <ScrollView contentContainerClassName="p-5" keyboardShouldPersistTaps="handled">
                 <View className="flex-row items-center justify-between mb-5">
                     <TouchableOpacity
-                        onPress={() => router.push('/(seeker)/profile')}
+                        onPress={() => router.push('/profile')}
                         className="flex flex-row bg-primary-200 rounded-full p-3 items-center justify-center mr-4"
                     >
                         <Image source={icons.backArrow} className="size-5" />

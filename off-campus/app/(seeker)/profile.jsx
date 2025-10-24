@@ -1,10 +1,11 @@
+// File: app/(seeker)/profile.jsx
 import { useClerk, useUser } from '@clerk/clerk-expo';
 import { useFonts } from "expo-font";
-import { useRouter, Redirect } from 'expo-router';
-import React from 'react'; // Removed useEffect as it's not needed here
+import { useRouter, Redirect } from 'expo-router'; // Ensure Redirect is imported
+import React from 'react';
 import { ActivityIndicator, Alert, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
-import icons from "../../constants/icons";
+import icons from "../../constants/icons"; // Adjust path if needed
 
 const SettingsItem = ({ icon, title, onPress, textStyle, showArrow = true }) => (
     <TouchableOpacity onPress={onPress} className="flex flex-row items-center justify-between py-3">
@@ -18,39 +19,38 @@ const SettingsItem = ({ icon, title, onPress, textStyle, showArrow = true }) => 
 
 const Profile = () => {
     const [fontsLoaded] = useFonts({
-        "Rubik-Bold": require("../../assets/fonts/Rubik-Bold.ttf"),
-        "Rubik-ExtraBold": require("../../assets/fonts/Rubik-ExtraBold.ttf"),
-        "Rubik-Light": require("../../assets/fonts/Rubik-Light.ttf"),
-        "Rubik-Medium": require("../../assets/fonts/Rubik-Medium.ttf"),
-        "Rubik-Regular": require("../../assets/fonts/Rubik-Regular.ttf"),
-        "Rubik-SemiBold": require("../../assets/fonts/Rubik-SemiBold.ttf"),
+        "Rubik-Bold": require("../../assets/fonts/Rubik-Bold.ttf"), // Adjust path
+        "Rubik-ExtraBold": require("../../assets/fonts/Rubik-ExtraBold.ttf"), // Adjust path
+        "Rubik-Light": require("../../assets/fonts/Rubik-Light.ttf"), // Adjust path
+        "Rubik-Medium": require("../../assets/fonts/Rubik-Medium.ttf"), // Adjust path
+        "Rubik-Regular": require("../../assets/fonts/Rubik-Regular.ttf"), // Adjust path
+        "Rubik-SemiBold": require("../../assets/fonts/Rubik-SemiBold.ttf"), // Adjust path
     });
 
     const router = useRouter();
-    // It's better to get isLoaded/isSignedIn from useAuth as useUser is for the user object itself
     const { user, isLoaded, isSignedIn } = useUser();
     const { signOut } = useClerk();
 
-    // ✅ THE FIX IS HERE
+    // onLogout function (remains the same)
     const onLogout = async () => {
         try {
-            // ONLY sign out. DO NOT navigate.
-            // RootLayoutNav will detect the isSignedIn change and handle the redirect.
             await signOut();
+            // No navigation here. RootLayoutNav will re-render,
+            // and this component will re-render, hitting the !isSignedIn check.
         } catch (err) {
             console.error("Logout error:", JSON.stringify(err, null, 2));
             Alert.alert('Logout Failed', 'Please try again.');
         }
     };
 
-    const handleLogout = () => { // No need for this to be async
+    const handleLogout = () => {
         Alert.alert('Confirm', 'Are you sure you want to logout?', [
             { text: 'Cancel', style: 'cancel' },
             { text: 'Logout', onPress: onLogout, style: 'destructive' }
         ]);
     };
 
-    // Wait for Clerk and fonts to be ready
+    // Wait for Clerk and fonts
     if (!isLoaded || !fontsLoaded) {
         return (
             <SafeAreaView className="bg-white h-full flex justify-center items-center">
@@ -59,18 +59,19 @@ const Profile = () => {
         );
     }
 
-    // If Clerk is loaded but user is not signed in, redirect from here
+    // ✅ ** ADD THIS CHECK BACK **
+    // This is the component's own guard.
     if (!isSignedIn) {
         console.log("[(seeker)/profile] Not signed in. Redirecting to /");
         return <Redirect href="/" />;
     }
-    
 
+    // Render profile UI
     return (
-        <SafeAreaView className='h-full bg-white'>
+        <SafeAreaView className='flex-1 bg-white'>
             <ScrollView showsVerticalScrollIndicator={true} contentContainerClassName="pb-32 px-7">
                 <View className="flex flex-row items-center justify-between mt-5">
-                    <Text style={{ fontFamily: 'Rubik-Bold', fontSize: 20 }} className="text-xl">Profile</Text>
+                    <Text style={{ fontFamily: 'Rubik-Bold' }} className="text-xl">Profile</Text>
                     <Image source={icons.bell} className="size-5" />
                 </View>
 
@@ -91,11 +92,6 @@ const Profile = () => {
                         title="My Applications" 
                         onPress={() => router.push('/profile/my-applications')} 
                     />
-                    {/*<SettingsItem 
-                        icon={icons.wallet}
-                        title="My Listings" 
-                        onPress={() => router.push('/profile/my-listings')} 
-                    />*/}
                     <SettingsItem 
                         icon={icons.user} 
                         title="My Roommate Profile" 

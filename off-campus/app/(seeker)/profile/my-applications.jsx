@@ -6,8 +6,8 @@ import { ActivityIndicator, FlatList, Text, View, TouchableOpacity } from 'react
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useUser } from '@clerk/clerk-expo';
-import { getPersonProfile, getApplicationsForSeeker } from '../../sanity';
-import { ApplicationCard } from '../../components/ApplicationCard'; // Adjust path if needed
+import { getPersonProfile, getApplicationsForSeeker } from '../../../sanity';
+import { ApplicationCard } from '../../../components/ApplicationCard'; // Adjust path if needed
 
 const MyApplicationsScreen = () => {
     const { user } = useUser();
@@ -16,9 +16,9 @@ const MyApplicationsScreen = () => {
     const [loading, setLoading] = useState(true);
 
     const [fontsLoaded] = useFonts({
-        "Rubik-Bold": require("../../assets/fonts/Rubik-Bold.ttf"),
-        "Rubik-Medium": require("../../assets/fonts/Rubik-Medium.ttf"),
-        "Rubik-Regular": require("../../assets/fonts/Rubik-Regular.ttf"),
+        "Rubik-Bold": require("../../../assets/fonts/Rubik-Bold.ttf"),
+        "Rubik-Medium": require("../../../assets/fonts/Rubik-Medium.ttf"),
+        "Rubik-Regular": require("../../../assets/fonts/Rubik-Regular.ttf"),
     });
 
     const fetchMyApplications = useCallback(async () => {
@@ -56,7 +56,7 @@ const MyApplicationsScreen = () => {
                 contentContainerClassName="p-5"
                 ListHeaderComponent={() => (
                     <View className="mb-5">
-                         <TouchableOpacity onPress={() => router.push('/(seeker)/profile')} className="mb-4">
+                         <TouchableOpacity onPress={() => router.push('/profile')} className="mb-4">
                             <Text className="text-primary-300 text-base">← Back to Profile</Text>
                         </TouchableOpacity>
                         <Text style={{ fontFamily: 'Rubik-Bold' }} className="text-2xl text-black-300">My Applications</Text>

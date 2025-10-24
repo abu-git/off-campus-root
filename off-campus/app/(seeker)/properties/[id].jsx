@@ -6,10 +6,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useUser } from '@clerk/clerk-expo'; // ✅ 1. Import useUser
 
 // ✅ 2. Import the new application and profile functions
-import { getListingDetails, getAgent, getPersonProfile, submitApplication, checkIfApplicationExists } from "../../../sanity";
-import images from "../../../constants/images";
-import icons from "../../../constants/icons";
-import { facilities } from "../../../constants/data";
+import { getListingDetails, getAgent, getPersonProfile, submitApplication, checkIfApplicationExists } from "../../../sanity"
+import images from "../../../constants/images"
+import icons from "../../../constants/icons"
+import { facilities } from "../../../constants/data"
 
 console.log("--- app/properties/[id].jsx file loaded ---");
 

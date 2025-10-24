@@ -15,7 +15,8 @@ const Explore = () => {
     // ... font loading ...
     const [fontsLoaded] = useFonts({
         "Rubik-Bold": require("../../assets/fonts/Rubik-Bold.ttf"),
-        // ... other fonts
+        "Rubik-Medium": require("../../assets/fonts/Rubik-Medium.ttf"),
+        "Rubik-Regular": require("../../assets/fonts/Rubik-Regular.ttf"),
     });
   
     // ✅ 2. State variables renamed for clarity
@@ -58,7 +59,7 @@ const Explore = () => {
         fetchExploreListings();
     }, []);
 
-    const handleCardPress = (id) => router.push(`/properties/${id}`);
+    const handleCardPress = (id) => router.push(`/(seeker)/properties/${id}`);
 
     if (!fontsLoaded) return null;
 

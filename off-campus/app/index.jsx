@@ -28,22 +28,28 @@ const WelcomeScreen = () => {
     };
 
     // Show loading indicator until Clerk and fonts are ready
-    if (!isLoaded || !fontsLoaded) {
+    if (!fontsLoaded) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
-                <ActivityIndicator size="large" color="#0061FF" /> {/* Use your primary color */}
+                <ActivityIndicator size="large" color="#0061FF" /> 
             </View>
         );
     }
 
-    // If signed in, render loading spinner while RootLayoutNav handles redirection
-    // This screen should ideally not be visible if signed in
-    if (isSignedIn) {
-        return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
-                <ActivityIndicator size="large" color="#0061FF" />
-            </View>
-        );
+    // ✅ ** "STUCK ON WELCOME" FIX IS MOVED HERE **
+    // If Clerk is loaded AND user is signed in, check their role and redirect
+    if (isSignedIn && user) {
+        const role = user.unsafeMetadata?.role;
+        console.log(`[index.jsx] User is signed in with role: ${role}. Redirecting...`);
+        if (role === 'seeker') {
+            return <Redirect href="/(seeker)" />;
+        } else if (role === 'lister') {
+            return <Redirect href="/(lister)/dashboard" />;
+        } else {
+            // Signed in but no role (should go to select-role)
+            // RootLayoutNav will handle this, but we can be explicit
+            return <Redirect href="/(auth)/select-role" />;
+        }
     }
 
     // Clerk is loaded, fonts are loaded, user is NOT signed in: Show the welcome options

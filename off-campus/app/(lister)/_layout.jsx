@@ -110,6 +110,17 @@ const ListerTabsLayout = () => {
                  }}
             />
 
+            <Tabs.Screen
+                name="messages" // Matches app/(lister)/messages.jsx
+                options={{
+                    title: 'Messages',
+                    headerShown: false,
+                    tabBarIcon: ({ focused }) => (
+                        <TabIcon focused={focused} icon={icons.chat} title="Messages" />
+                    )
+                 }}
+            />
+
             {/* 4. Settings/Profile Tab */}
             <Tabs.Screen
                 name="profile" // Corresponds to app/(lister)/profile.jsx

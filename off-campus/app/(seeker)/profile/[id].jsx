@@ -3,7 +3,7 @@ import { useFonts } from "expo-font";
 import { ActivityIndicator, ScrollView, Text, View, Image, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { getPersonProfileById } from '../../sanity'; // Import our new function
+import { getPersonProfileById } from '../../../sanity'; // Import our new function
 
 // Helper component for clean, reusable rows
 const ProfileDetailRow = ({ label, value }) => (
@@ -20,9 +20,9 @@ const PublicProfileScreen = () => {
     const [loading, setLoading] = useState(true);
 
     const [fontsLoaded] = useFonts({
-        "Rubik-Bold": require("../../assets/fonts/Rubik-Bold.ttf"),
-        "Rubik-Medium": require("../../assets/fonts/Rubik-Medium.ttf"),
-        "Rubik-Regular": require("../../assets/fonts/Rubik-Regular.ttf"),
+        "Rubik-Bold": require("../../../assets/fonts/Rubik-Bold.ttf"),
+        "Rubik-Medium": require("../../../assets/fonts/Rubik-Medium.ttf"),
+        "Rubik-Regular": require("../../../assets/fonts/Rubik-Regular.ttf"),
     });
 
     useEffect(() => {

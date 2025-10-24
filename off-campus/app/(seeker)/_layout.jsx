@@ -3,9 +3,17 @@ import { Tabs } from "expo-router";
 import React from 'react';
 import { Image, Text, View } from 'react-native';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useFonts } from "expo-font";
 
 // I've removed `mt-3` and centered the content so it looks better with the new padding.
-const TabIcon = ({ focused, icon, title, containerClassName }) => (
+const TabIcon = ({ focused, icon, title, containerClassName }) => {
+    const [fontsLoaded] = useFonts({
+        "Rubik-SemiBold": require("../../assets/fonts/Rubik-SemiBold.ttf"), // Adjust path
+        "Rubik-Regular": require("../../assets/fonts/Rubik-Regular.ttf"), // Adjust path
+    });
+    if (!fontsLoaded) return null;
+
+    return(
     <View className={`items-center justify-center flex-col ${containerClassName}`}>
         <Image
             source={icon}
@@ -16,15 +24,14 @@ const TabIcon = ({ focused, icon, title, containerClassName }) => (
         {/* We wrap the Text in a View with a fixed height to prevent any vertical shift */}
         <View className="h-5 justify-center"> 
             <Text
-                className={`${
-                    focused ? "text-primary-300" : "text-black-200"
-                } font-semibold text-xs w-full text-center`}
+                className={`${focused ? "text-primary-300" : "text-black-200"} font-semibold text-xs w-full text-center`}
+                style={{ fontFamily: focused ? 'Rubik-SemiBold' : 'Rubik-Regular' }}
             >
                 {title}
             </Text>
         </View>
-    </View>
-);
+    </View>)
+};
 
 const TabsLayout = () => {
     const { bottom } = useSafeAreaInsets();
@@ -67,6 +74,22 @@ const TabsLayout = () => {
                     ),
                 }}
             />
+
+            <Tabs.Screen
+                name="messages" // Matches app/(seeker)/messages.jsx
+                options={{
+                    title: 'Messages',
+                    headerShown: false,
+                    tabBarIcon: ({ focused }) => (
+                        <TabIcon
+                            icon={icons.chat} // You need an 'icons.chat'
+                            title="Messages"
+                            focused={focused}
+                        />
+                    )
+                }}
+            />
+
             <Tabs.Screen
                 name="roommates"
                 options={{
@@ -100,6 +123,30 @@ const TabsLayout = () => {
                     // Hide this screen from appearing AS a tab
                     href: null,
                     // Hide the header for this screen
+                    headerShown: false,
+                }}
+            />
+            <Tabs.Screen
+                name="profile/[id]" // Matches app/(seeker)/profile/edit.jsx
+                options={{
+                    tabBarStyle: { display: "none" },
+                    href: null,
+                    headerShown: false,
+                }}
+            />
+            <Tabs.Screen
+                name="profile/edit" // Matches app/(seeker)/profile/edit.jsx
+                options={{
+                    tabBarStyle: { display: "none" },
+                    href: null,
+                    headerShown: false,
+                }}
+            />
+            <Tabs.Screen
+                name="profile/my-applications" // Matches app/(seeker)/profile/my-applications.jsx
+                options={{
+                    tabBarStyle: { display: "none" },
+                    href: null,
                     headerShown: false,
                 }}
             />
