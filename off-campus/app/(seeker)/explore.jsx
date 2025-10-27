@@ -64,7 +64,7 @@ const Explore = () => {
     if (!fontsLoaded) return null;
 
     return (
-        <SafeAreaView className="bg-white flex-1">
+        <SafeAreaView className="bg-white flex-1" edges={['top']}>
             <FlatList
                 // ✅ 5. Data prop updated
                 data={listings}
@@ -74,7 +74,7 @@ const Explore = () => {
                 contentContainerClassName="pb-5"
                 columnWrapperClassName="flex gap-5 px-5"
                 showsVerticalScrollIndicator={false}
-                ListFooterComponent={<View className="h-20" />}
+                ListFooterComponent={<View className="h-10" />}
                 ListHeaderComponent={() => (
                     <View className="px-5">
                         <View className="flex flex-row items-center justify-between mt-5">

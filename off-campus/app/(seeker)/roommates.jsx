@@ -98,7 +98,7 @@ const RoommatesExplore = () => {
     }
 
     return (
-        <SafeAreaView className="bg-white h-full flex-1">
+        <SafeAreaView className="bg-white h-full flex-1" edges={['top']}>
             <FlatList
                 data={allOtherProfiles}
                 renderItem={({ item }) => (
@@ -110,6 +110,7 @@ const RoommatesExplore = () => {
                 keyExtractor={(item) => item._id}
                 numColumns={1} // Using 1 column for the new card layout
                 contentContainerClassName="p-5"
+                ListFooterComponent={<View className="h-8" />}
                 ListHeaderComponent={() => (
                     <View className="mb-5">
                         <Text style={{ fontFamily: 'Rubik-Bold' }} className="text-3xl text-black-300">

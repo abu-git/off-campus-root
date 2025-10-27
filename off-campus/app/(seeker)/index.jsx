@@ -104,17 +104,17 @@ const Index = () => {
     }
 
     return (
-        <SafeAreaView className="bg-white flex-1">
+        <SafeAreaView className="bg-white flex-1" edges={['top']} >
             <FlatList
                 // ✅ 5. Data prop updated for the main list
                 data={homeListings}
                 renderItem={({item}) => <Card item={item} onPress={() => handleCardPress(item._id)} />}
                 keyExtractor={(item) => item._id}
                 numColumns={2}
-                contentContainerClassName="pb-5"
+                contentContainerClassName="pb-10"
                 columnWrapperClassName="flex gap-5 px-5"
                 showsVerticalScrollIndicator={false}
-                ListFooterComponent={<View className="h-20" />}
+                //ListFooterComponent={<View className="h-10" />}
                 ListHeaderComponent={() => (
                     <View className="px-5">
                         {/* Header with user info */}

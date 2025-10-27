@@ -50,7 +50,7 @@ const TabsLayout = () => {
                     paddingTop: topPadding,
                     // 2. Adjust height to include base height, top padding, and bottom safe area
                     height: barHeight + topPadding + bottom,
-                    paddingBottom: bottom,
+                    paddingBottom: bottom ? bottom / 2 : 8,
                 },
             }}
         >

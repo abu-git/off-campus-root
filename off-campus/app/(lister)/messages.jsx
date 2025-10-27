@@ -54,7 +54,7 @@ const ListerMessagesScreen = () => {
     );
 
     return (
-        <SafeAreaView className="flex-1 bg-white">
+        <SafeAreaView className="flex-1 bg-white" edges={['top']}>
             <View className="p-5 flex-row justify-between items-center border-b border-gray-200">
                 <Text style={{ fontFamily: 'Rubik-Bold' }} className="text-3xl text-black-300">
                     Messages

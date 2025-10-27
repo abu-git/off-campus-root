@@ -48,7 +48,7 @@ const MyListingsScreen = () => {
     }
 
     return (
-        <SafeAreaView className="bg-white flex-1">
+        <SafeAreaView className="bg-white flex-1" edges={['top']}>
             <FlatList
                 data={myListings}
                 keyExtractor={(item) => item._id}
