@@ -1,0 +1,3 @@
+[submodule "off-campus-api"]
+	path = off-campus-api
+	url = https://github.com/abu-git/off-campus-api.git

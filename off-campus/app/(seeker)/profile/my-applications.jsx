@@ -9,6 +9,7 @@ import { useUser } from '@clerk/clerk-expo';
 import { getPersonProfile, getApplicationsForSeeker } from '../../../sanity';
 import { ApplicationCard } from '../../../components/ApplicationCard'; // Adjust path if needed
 
+
 const MyApplicationsScreen = () => {
     const { user } = useUser();
     const router = useRouter();

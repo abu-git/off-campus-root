@@ -104,6 +104,8 @@ const ApplicantsScreen = () => {
             return;
         }
 
+        console.log(application.listing?.title)
+
         // --- If the application is being ACCEPTED ---
         if (newStatus === 'accepted') {
             try {

@@ -25,7 +25,7 @@ export default function RootLayout() {
     "Rubik-SemiBold": require("../assets/fonts/Rubik-SemiBold.ttf"),
   });
 
-  const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY || 'pk_test_YOUR_KEY_HERE';
+  const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY || 'pk_test_dGVuZGVyLWJpcmQtMTAuY2xlcmsuYWNjb3VudHMuZGV2JA';
 
   useEffect(() => {
     if (fontsLoaded || fontError) {
@@ -81,6 +81,7 @@ function RootLayoutNav() {
                     const currentSegment = segments[0] || '';
                     const isInAuthFlow = currentSegment === '(auth)';
                     const isInChatFlow = currentSegment === 'chat';
+                    const isInPayment = currentSegment === 'payment';
                     // isPublicHome is no longer needed for signed-in logic
 
                     if (isSignedIn) {
@@ -125,7 +126,7 @@ function RootLayoutNav() {
                             currentSegment === primaryLayout ||
                             currentSegment === 'properties' ||
                             currentSegment === 'profile' ||
-                            isInChatFlow ||
+                            isInChatFlow || isInPayment ||
                             isInAuthFlow;
 
                         if (effectiveRole === 'seeker' || effectiveRole === 'lister') {

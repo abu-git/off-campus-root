@@ -66,7 +66,10 @@ const ListerMessagesScreen = () => {
                 sort={sort}
                 onSelect={(channel) => {
                     // Navigate to the same top-level chat screen
-                    router.push(`/chat/${channel.cid}`);
+                    router.push({
+                        pathname: `/chat/${channel.cid}`,
+                        params: { backPath: '/(lister)/messages' } 
+                    });
                 }}
                 LoadingIndicator={LoadingIndicator}
                 EmptyStateIndicator={EmptyStateIndicator}

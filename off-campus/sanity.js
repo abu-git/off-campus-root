@@ -346,9 +346,31 @@ export async function countPendingApplicationsForUser(clerkId) {
 // Get a user's roommate profile using their Clerk ID
 export async function getPersonProfile(clerkId) {
     try {
-        const data = await sanityClient.fetch(`*[_type == "personProfile" && clerkId == $clerkId]`, { clerkId });
-        // Return the first profile found, or null if none exists
-        return data?.[0] || null;
+        // ✅ UPDATED QUERY: This query now builds the same
+        // nested 'characteristics' and 'preferences' objects
+        // that the compatibility function needs.
+        const query = `*[_type == "personProfile" && clerkId == $clerkId][0]{
+            ..., 
+            "characteristics": {
+                sleepSchedule,
+                cleanliness,
+                socialLifestyle,
+                noisePreference,
+                respect
+            },
+            "preferences": {
+                preferredGender,
+                preferredSleepSchedule,
+                preferredCleanliness,
+                preferredSocialLifestyle,
+                preferredNoiseLevel,
+                preferredRespect,
+                preferredMinBudget
+            }
+        }`;
+        
+        const data = await sanityClient.fetch(query, { clerkId });
+        return data || null;
     } catch (error) {
         console.log("Error fetching person profile:", error);
     }
@@ -373,8 +395,30 @@ export async function createOrUpdatePersonProfile(profileData) {
 // Get a person's profile using their document ID
 export async function getPersonProfileById(profileId) {
     try {
-        const data = await sanityClient.fetch(`*[_type == "personProfile" && _id == $profileId][0]`, { profileId });
-        return data;
+        // This query now builds the nested 'characteristics' and 'preferences'
+        // objects, matching the structure our other functions use.
+        const query = `*[_type == "personProfile" && _id == $profileId][0]{
+            ..., 
+            "characteristics": {
+                sleepSchedule,
+                cleanliness,
+                socialLifestyle,
+                noisePreference,
+                respect
+            },
+            "preferences": {
+                preferredGender,
+                preferredSleepSchedule,
+                preferredCleanliness,
+                preferredSocialLifestyle,
+                preferredNoiseLevel,
+                preferredRespect,
+                preferredMinBudget
+            }
+        }`;
+        
+        const data = await sanityClient.fetch(query, { profileId });
+        return data || null;
     } catch (error) {
         console.log("Error fetching person profile by ID:", error);
     }
@@ -416,7 +460,11 @@ export async function getApplicationsForListing(listingId) {
             *[_type == "application" && listing._ref == $listingId]{
                 ...,
                 // Expand the seeker reference to get their full profile details
-                seeker->
+                seeker->,
+                listing->{
+                  _id,
+                  title
+                }
             } | order(_createdAt desc)
         `, { listingId });
         return data;
@@ -478,9 +526,45 @@ export async function checkIfApplicationExists(listingId, seekerProfileId) {
     }
 }
 
+// Updates an application's status to 'completed'
+export async function completeRentalApplication(applicationId) {
+    try {
+        console.log(`Completing application: ${applicationId}`);
+        const result = await sanityClient
+            .patch(applicationId) // Target the application document by its ID
+            .set({ status: 'completed' }) // Set the new status
+            .commit(); // Commit the change
+        return result;
+    } catch (error) {
+        console.error("Error completing rental application:", error);
+        throw new Error('Failed to complete application.');
+    }
+}
+
 export async function getAllSeekerProfiles() {
     try {
-        const data = await sanityClient.fetch(`*[_type == "personProfile"] | order(_createdAt desc)`);
+        // We fetch all personProfiles
+        // The '...' spreads all top-level fields (clerkId, fullName, gender, maxBudget)
+        // We then explicitly group the characteristics and preferences
+        const data = await sanityClient.fetch(`*[_type == "personProfile"]{
+            ..., 
+            "characteristics": {
+                sleepSchedule,
+                cleanliness,
+                socialLifestyle,
+                noisePreference,
+                respect
+            },
+            "preferences": {
+                preferredGender,
+                preferredSleepSchedule,
+                preferredCleanliness,
+                preferredSocialLifestyle,
+                preferredNoiseLevel,
+                preferredRespect,
+                preferredMinBudget
+            }
+        }`);
         return data;
     } catch (error) {
         console.log("Error fetching all seeker profiles:", error);

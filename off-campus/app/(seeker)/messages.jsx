@@ -75,7 +75,10 @@ const MessagesScreen = () => {
                 sort={sort}
                 onSelect={(channel) => {
                     // Navigate to the individual chat screen, passing the Channel ID (cid)
-                    router.push(`/chat/${channel.cid}`);
+                    router.push({
+                        pathname: `/chat/${channel.cid}`,
+                        params: { backPath: '/(seeker)/messages' } 
+                    });
                 }}
                 LoadingIndicator={LoadingIndicator} // Show custom loading
                 EmptyStateIndicator={EmptyStateIndicator} // Show custom empty state
