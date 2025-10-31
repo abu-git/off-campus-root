@@ -169,7 +169,7 @@ const ApplicantsScreen = () => {
                 contentContainerClassName="p-5"
                 ListHeaderComponent={() => (
                     <View className="mb-5">
-                        <TouchableOpacity onPress={() => router.back()} className="mb-4">
+                        <TouchableOpacity onPress={() => router.replace('/(lister)/listings')} className="mb-4">
                             <Text className="text-primary-300 text-base" style={{fontFamily: 'Rubik-Medium'}}>← Back to Listings</Text>
                         </TouchableOpacity>
                         <Text style={{ fontFamily: 'Rubik-Bold' }} className="text-3xl text-black-300">

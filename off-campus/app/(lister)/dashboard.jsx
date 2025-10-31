@@ -35,7 +35,11 @@ const ActionButton = ({ title, onPress, icon }) => (
 const ListerDashboard = () => {
     const { user, isLoaded: isUserLoaded } = useUser();
     const router = useRouter();
-    const [fontsLoaded] = useFonts({ /* ... your fonts ... */ });
+    const [fontsLoaded] = useFonts({
+        "Rubik-Bold": require("../../assets/fonts/Rubik-Bold.ttf"),
+        "Rubik-Medium": require("../../assets/fonts/Rubik-Medium.ttf"),
+        "Rubik-Regular": require("../../assets/fonts/Rubik-Regular.ttf"),
+    });
 
     const [listingCount, setListingCount] = useState(0);
     const [applicantCount, setApplicantCount] = useState(0);
